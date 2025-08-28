@@ -1,0 +1,128 @@
+// components/BudgetExpenseChart.js
+"use client"
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
+export function BudgetExpenseChart({ budgetData }) {
+
+    
+  const { theme } = useTheme()
+   const [chartKey, setChartKey] = useState(0) // Force re-render
+  
+  useEffect(() => {
+    // Change key when theme changes to force chart re-render
+    setChartKey(prev => prev + 1)
+  }, [theme])
+  const isDark = theme === 'dark'
+  console.log(isDark);
+  
+
+  const chartData = {
+    labels: budgetData.map(item => item.category), // ['Food', 'Transport', 'Entertainment', 'Bills']
+    datasets: [
+      {
+        label: 'Spent',
+        data: budgetData.map(item => item.spent), // [450, 180, 120, 280]
+        backgroundColor: isDark ? '#FF6B6B' : '#FF5252',
+        borderColor: isDark ? '#FF5252' : '#FF1744',
+        borderWidth: 1,
+        stack: 'budget-stack',
+      },
+      {
+        label: 'Remaining Budget',
+        data: budgetData.map(item => Math.max(0, item.budget - item.spent)), // [50, 70, 130, 20]
+        backgroundColor: isDark ? '#4ECDC4' : '#00ACC1',
+        borderColor: isDark ? '#26A69A' : '#00838F',
+        borderWidth: 1,
+        stack: 'budget-stack',
+      },
+    ],
+  }
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: isDark ? '#ffffff' : '#000000',
+          font: {
+            family: 'var(--font-accent)', // Your Montserrat font
+            size: 12,
+          }
+        }
+      },
+      title: {
+        display: true,
+        text: 'Budget vs Expenses ',
+        color: isDark ? '#ffffff' : '#000000',
+        font: {
+          family: 'var(--font-heading)', // Your Anton font
+          size: 16,
+        }
+      },
+      tooltip: {
+        callbacks: {
+          footer: function(tooltipItems) {
+            const dataIndex = tooltipItems[0].dataIndex
+            const budget = budgetData[dataIndex].budget
+            const spent = budgetData[dataIndex].spent
+            const percentage = ((spent / budget) * 100).toFixed(1)
+            return `Budget: $${budget} | Used: ${percentage}%`
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: {
+          color: isDark ? '#ffffff' : '#000000',
+        },
+        grid: {
+          color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        }
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        ticks: {
+          color: isDark ? '#ffffff' : '#000000',
+          callback: function(value) {
+            return '$' + value
+          }
+        },
+        grid: {
+          color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        }
+      },
+    },
+  }
+
+  return (
+    <div className="h-80 w-full">
+      <Bar data={chartData} options={options} key={chartKey}/>
+    </div>
+  )
+}

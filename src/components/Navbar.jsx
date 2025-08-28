@@ -10,9 +10,9 @@ function Navbar() {
       <div id="left"><p className='text-2xl font-sans font-bold bg-gradient-to-r from-orange-500 to-blue-500 bg-clip-text text-transparent'>TrackFlow</p></div>
       <div id="right" className='font-sans font-bold'>
         <div className='flex gap-4 text-[18px]'>
-          {/* <Link href='/home'>
+          <Link href='/home'>
           <button>Home</button>
-          </Link> */}
+          </Link>
            <AnimatedThemeToggler/>
           {/* <p className='text-2xl font-sans font-bold'>right here</p> */}
           <Button variant="outline" className={'bg-amber-500 text-white font-bold text-[18px] font-sans dark:bg-amber-500'}>Log In</Button>
