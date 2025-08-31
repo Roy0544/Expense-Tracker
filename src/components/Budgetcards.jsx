@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { NumberTicker } from "@/components/magicui/number-ticker";
+
 export default function Budgetcards() {
   return (
     <div>
@@ -22,7 +24,7 @@ export default function Budgetcards() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-sans font-bold">$1500</p>
+            <p className="text-2xl font-sans font-bold"> $1500</p>
           </CardContent>
         </div>
         <CardFooter>

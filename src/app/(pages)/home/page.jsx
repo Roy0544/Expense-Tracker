@@ -4,6 +4,8 @@ import Dashboardpie from "@/components/PieChart";
 import { ProgressiveBlur } from "@/components/magicui/progressive-blur";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { ComicText } from "@/components/magicui/comic-text";
+import { NumberTicker } from "@/components/magicui/number-ticker";
+
 import React from "react";
 
 function page() {
@@ -30,7 +32,9 @@ function page() {
             <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
             <p>
               Total Budget <br />{" "}
-              <span className="text-green-500 font-mono"> $1500</span>
+              <span className="text-green-500 font-mono">
+                $ <NumberTicker value={1500} className={"text-green-500"} />{" "}
+              </span>
             </p>
             <svg
               className="stroke-blue-600 h-10 w-10"
@@ -56,7 +60,9 @@ function page() {
             <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
             <p>
               Total Expense <br />{" "}
-              <span className="text-red-500 font-mono"> $850 </span>
+              <span className="text-red-500 font-mono">
+                $ <NumberTicker value={800} className={"text-red-500"} />{" "}
+              </span>
             </p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +92,10 @@ function page() {
             <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
             <p>
               No of Budgets <br />{" "}
-              <span className="text-amber-500 font-mono">11</span>
+              <span className="text-amber-500 font-mono">
+                {" "}
+                <NumberTicker value={7} className={"text-amber-500"} />{" "}
+              </span>
             </p>
             <svg
               className="stroke-blue-500 h-8 w-8"
