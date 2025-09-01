@@ -1,3 +1,4 @@
+"use client";
 import Budgetcards from "@/components/Budgetcards";
 import Dashboard from "@/components/ChartShow";
 import Dashboardpie from "@/components/PieChart";
@@ -5,10 +6,19 @@ import { ProgressiveBlur } from "@/components/magicui/progressive-blur";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { ComicText } from "@/components/magicui/comic-text";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-
 import React from "react";
+import { useSelector } from "react-redux";
 
 function page() {
+  const authstate = useSelector((state) => state.auth.status);
+
+  if (authstate === false) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
+        Please Login To Access Dashboard
+      </div>
+    );
+  }
   return (
     <div>
       <div className="w-[90vw] mx-auto mt-10 border h-auto p-6 dark:text-slate-100 text-[#374151] bg-slate-100 dark:bg-black rounded-md shadow-2xl ">

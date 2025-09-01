@@ -1,9 +1,38 @@
+"use client";
 import React from "react";
+import { useForm } from "react-hook-form";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import { login } from "@/store/authSlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import authservice from "@/appwrite/auth";
 function LoginPage() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    console.log(data);
+    try {
+      const account = await authservice.login(data);
+      console.log("Account Created Succesfully", account);
+      if (account) {
+        dispatch(login(account));
+      }
+
+      router.push("/home");
+    } catch (error) {
+      console.log("Account Creation Failed at Form Side", error);
+      throw error;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4 rounded-2xl">
       <MagicCard
@@ -19,7 +48,7 @@ function LoginPage() {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email */}
           <div>
             <label
@@ -31,10 +60,21 @@ function LoginPage() {
             <input
               type="email"
               id="email"
-              name="email"
               placeholder="john@example.com"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Enter a valid email",
+                },
+              })}
               className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password */}
@@ -48,18 +88,30 @@ function LoginPage() {
             <input
               type="password"
               id="password"
-              name="password"
               placeholder="Enter your password"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
               className="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-semibold py-3"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-semibold py-3 disabled:opacity-50"
           >
-            Sign In
+            {isSubmitting ? "Signing In..." : "Sign In"}
           </Button>
 
           {/* Social Login */}

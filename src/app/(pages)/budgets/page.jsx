@@ -1,10 +1,73 @@
+"use client";
+import authservice from "@/appwrite/auth";
+import budgetservice from "@/appwrite/budget";
 import Budgetcards from "@/components/Budgetcards";
 import DataTable from "@/components/ExpenseDataTable";
+import CategoryAmountPopover from "@/components/Popoverbud";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import { login } from "@/store/authSlice";
+import { allbudgets } from "@/store/budgetSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 function page() {
+  const authstate = useSelector((state) => state.auth.status);
+  const [budgets, setbudgets] = useState([]);
+  const [searchinput, setsearchinput] = useState("");
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const Checkstattus = async () => {
+      try {
+        const user = await authservice.getCurrentUser();
+        if (user) {
+          dispatch(login(user));
+        }
+      } catch (error) {
+        console.log("No User Logged In", error);
+        throw error;
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    Checkstattus();
+  }, []);
+
+  useEffect(() => {
+    const getcategories = async () => {
+      const categories = await budgetservice.listbudgets();
+      setbudgets(categories.rows);
+      console.log(categories);
+
+      if (categories) {
+        dispatch(allbudgets(categories));
+      }
+    };
+    getcategories();
+  }, []);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
+        Loading...
+      </div>
+    );
+  }
+
+  if (authstate === false) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
+        Please Login To Access Budget
+      </div>
+    );
+  }
+  const handleSearch = (e) => {
+    setsearchinput(e.target.value);
+  };
+  const filtered = budgets.filter((bud) =>
+    bud.CategoryName.toLowerCase().includes(searchinput.toLowerCase())
+  );
   return (
     <div>
       <div className="w-[90vw] mx-auto mt-10 border h-auto p-6 dark:text-slate-100 text-[#374151] bg-slate-100 dark:bg-black rounded-md shadow-2xl ">
@@ -31,23 +94,29 @@ function page() {
             </svg>
           </div>
           <div className="flex gap-4 items-centr h-auto ">
-            <button className="w-[140px] border bg-green-500 text-white font-bold rounded-md h-10 hover:bg-green-600 transition px-1 ">
+            {/* <button className="w-[140px] border bg-green-500 text-white font-bold rounded-md h-10 hover:bg-green-600 transition px-1 ">
               Create Budget
-            </button>
+            </button> */}
+            <CategoryAmountPopover />
             <Input
               type={"search"}
               className={"w-[220px]"}
-              placeholder={"Search "}
+              placeholder={"Search By Category Name "}
+              onChange={handleSearch}
+              value={searchinput}
             />
             <Button className={"bg-white text-black"}>Search</Button>
           </div>
         </div>
         <div id="budgetscards" className=" mt-16 ">
           <div className="grid grid-cols-1 gap-5 w-full  p-6  ">
-            <Budgetcards />
-            <Budgetcards />
-            <Budgetcards />
-            <Budgetcards />
+            {filtered.map((budget) => (
+              <Budgetcards
+                name={budget.CategoryName}
+                amount={budget.Amount}
+                key={budget.$id}
+              />
+            ))}
           </div>
         </div>
       </div>

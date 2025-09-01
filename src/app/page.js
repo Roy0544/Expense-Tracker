@@ -1,14 +1,19 @@
 import { HeroScrollDemo } from "@/components/HeroScrool";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 import { Highlighter } from "@/components/magicui/highlighter";
-import Navbar from "@/components/Navbar";
+
 import { MarqueeDemo } from "@/components/Testimonials";
-import Image from "next/image";
-import Information from '@/components/Information'
+
+import Information from '@/components/Information';
+import UserAuthClientComponent from "./checkUser";
+
 
 export default function Home() {
+  
+  
   return (
-   <div className="w-full h-screen text-[#374151]  dark:dark:text-slate-100">
+    <div className="w-full h-screen text-[#374151]  dark:dark:text-slate-100">
+     <UserAuthClientComponent/>
     <div>
       <div className="w-[90vw] mx-auto flex flex-col justify-center items-center mt-15  gap-9">
 

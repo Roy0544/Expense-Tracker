@@ -82,7 +82,7 @@ export default function DataTable() {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4 dark:bg-black">
       {/* 🔍 Search Bar */}
       <Input
         placeholder="Search..."

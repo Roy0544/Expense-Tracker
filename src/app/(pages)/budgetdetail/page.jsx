@@ -28,7 +28,7 @@ function page() {
             <Addexpense />
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-lg mt-10 dark:bg-hsl(224 71% 4%) ">
+        <div className="bg-white p-6 rounded-lg shadow-lg mt-10 dark:bg-hsl(224 71% 4%) dark:bg-black ">
           <h1 className="text-3xl">Latest Expenses</h1>
           <DataTable />
         </div>
