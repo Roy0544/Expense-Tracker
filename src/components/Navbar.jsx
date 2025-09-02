@@ -8,6 +8,7 @@ import Logout from "./Logout";
 
 function Navbar() {
   const authstate = useSelector((state) => state.auth.status);
+
   return (
     <div className=" sticky top-1 z-50 bg-white dark:bg-slate-950  shadow-[-10px_-10px_30px_4px_rgba(0,0,0,0.1),_10px_10px_30px_4px_rgba(45,78,255,0.15)] w-[90vw] h-14 mx-auto flex justify-between items-center rounded-md px-4 ">
       <div id="left">
@@ -71,6 +72,16 @@ function Navbar() {
                   }
                 >
                   Expense
+                </Button>
+              </Link>
+              <Link href="/user">
+                <Button
+                  variant={"outline"}
+                  className={
+                    "bg-blue-400 text-white font-bold text-[16px] font-sans dark:bg-blue-400"
+                  }
+                >
+                  user
                 </Button>
               </Link>
               <Logout />

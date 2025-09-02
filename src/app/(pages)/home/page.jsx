@@ -6,10 +6,52 @@ import { ProgressiveBlur } from "@/components/magicui/progressive-blur";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { ComicText } from "@/components/magicui/comic-text";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import budgetservice from "@/appwrite/budget";
+import authservice from "@/appwrite/auth";
+import { login } from "@/store/authSlice";
+import expneseservice from "@/appwrite/expense";
+import { allbudgets } from "@/store/budgetSlice";
+import { allexpenses } from "@/store/expenseSlice";
+import Link from "next/link";
 
 function page() {
+  const dispatch = useDispatch();
+  const [budgetdata, setbudgetdata] = useState([]);
+  const [expensedata, setexpensedata] = useState([]);
+  useEffect(() => {
+    const getallbudgets = async () => {
+      const bud = await budgetservice.listbudgets();
+      setbudgetdata(bud.rows);
+      // dispatch(allbudgets(bud.rows))
+      console.log(bud.rows);
+    };
+    const getcurrentuser = async () => {
+      const user = await authservice.getCurrentUser();
+      if (user) {
+        dispatch(login(user));
+      }
+    };
+    const getallexpense = async () => {
+      const exp = await expneseservice.listexpenses();
+      setexpensedata(exp.rows);
+      // dispatch(allexpenses(exp.rows))
+      console.log(exp);
+    };
+    getallbudgets();
+    getcurrentuser();
+    getallexpense();
+  }, []);
+  const amount = budgetdata.reduce(
+    (total, item) => total + Number(item.Amount),
+    0
+  );
+  const expenseamount = expensedata.reduce(
+    (total, item) => total + Number(item.expenseAmount),
+    0
+  );
+
   const authstate = useSelector((state) => state.auth.status);
 
   if (authstate === false) {
@@ -19,17 +61,19 @@ function page() {
       </div>
     );
   }
+  console.log(budgetdata);
+
   return (
     <div>
-      <div className="w-[90vw] mx-auto mt-10 border h-auto p-6 dark:text-slate-100 text-[#374151] bg-slate-100 dark:bg-black rounded-md shadow-2xl ">
-        <div className="">
-          <ComicText fontSize={3} className={"tracking-widest font-extrabold"}>
+      <div className="w-[90vw] mx-auto mt-10 border h-auto p-8 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-md shadow-2xl ring-1 ring-gray-900/5">
+        <div className="mb-4">
+          <ComicText fontSize={3} className={"tracking-widest font-extrabold "}>
             My DashBoard
           </ComicText>
         </div>
 
         <p className="text-[18px] mt-5 text-center w-full">
-          Get All Your Budgets In One Place , Have a Track At Your Expense
+          Track your budgets and expenses with elegant insights
         </p>
         <div
           id="amounts"
@@ -37,13 +81,17 @@ function page() {
         >
           <div
             id="budget"
-            className=" relative w-[230px] h-20 border p-4 flex justify-between items-center rounded-xl shadow-md hover:shadow-lg transition bg-green-100 dark:bg-black"
+            className=" relative w-[230px] h-20  p-4 flex justify-between items-center rounded-xl shadow-md hover:ring-2 hover:ring-blue-500/20 hover:ring-offset-2 transition-all duration-200 bg-green-100 dark:bg-gray-800 border border-emerald-200 dark:border-emerald-700"
           >
-            <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
-            <p>
+            <ShineBorder shineColor={["#4CAF50", "#81C784", "#A5D6A7"]} />
+            <p className="font-light">
               Total Budget <br />{" "}
-              <span className="text-green-500 font-mono">
-                $ <NumberTicker value={1500} className={"text-green-500"} />{" "}
+              <span className="text-green-600 font-mono">
+                ${" "}
+                <NumberTicker
+                  value={amount}
+                  className={"text-green-500 dark:text-green-400"}
+                />{" "}
               </span>
             </p>
             <svg
@@ -65,13 +113,17 @@ function page() {
 
           <div
             id="expense"
-            className=" relative w-[230px] h-20 border p-4 flex justify-between items-center rounded-xl shadow-md hover:shadow-lg transition bg-red-100 dark:bg-black"
+            className=" relative w-[230px] h-20  p-4 flex justify-between items-center rounded-xl shadow-md hover:ring-2 hover:ring-blue-500/20 hover:ring-offset-2 transition-all duration-200 bg-red-100 dark:bg-gray-800 border border-rose-200 dark:border-rose-700"
           >
-            <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
-            <p>
+            <ShineBorder shineColor={["#FF0000", "#B22222", "#8B0000"]} />
+            <p className="font-light">
               Total Expense <br />{" "}
-              <span className="text-red-500 font-mono">
-                $ <NumberTicker value={800} className={"text-red-500"} />{" "}
+              <span className="text-red-500 font-mono  ">
+                ${" "}
+                <NumberTicker
+                  value={expenseamount}
+                  className={"text-red-500 dark:text-red-400"}
+                />{" "}
               </span>
             </p>
             <svg
@@ -97,14 +149,17 @@ function page() {
 
           <div
             id="budgetCount"
-            className=" relative w-[230px] h-20 border p-4 flex justify-between items-center rounded-xl shadow-md hover:shadow-lg transition bg-amber-100 dark:bg-black "
+            className=" relative w-[230px] h-20  p-4 flex justify-between items-center rounded-xl shadow-md hover:ring-2 hover:ring-blue-500/20 hover:ring-offset-2 transition-all duration-200 bg-amber-100  dark:bg-gray-800 border border-blue-200 dark:border-blue-700 "
           >
-            <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
-            <p>
+            <ShineBorder shineColor={["#FFC107", "#FFB300", "#FF8F00"]} />
+            <p className="font-light">
               No of Budgets <br />{" "}
               <span className="text-amber-500 font-mono">
                 {" "}
-                <NumberTicker value={7} className={"text-amber-500"} />{" "}
+                <NumberTicker
+                  value={budgetdata.length}
+                  className={"text-amber-500 dark:text-amber-400"}
+                />{" "}
               </span>
             </p>
             <svg
@@ -124,29 +179,47 @@ function page() {
           </div>
         </div>
 
-        <div className="flex justify-between mt-10">
+        <div className="flex justify-between mt-10 h-fit">
           <div
             id="chart"
-            className="w-[60%] h-auto border rounded-2xl shadow-md p-4 bg-white dark:bg-black"
+            className="w-[60%] h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-xl shadow-2xl p-0.5"
           >
-            <Dashboard />
+            <Dashboard budget={budgetdata} expense={expensedata} />
           </div>
           <div
             id="group"
-            className="w-[30%] h-auto rounded-xl bg-white dark:bg-black border shadow-md  flex flex-col relative p-3 "
+            className="w-[30%] h-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-4 relative overflow-hidden "
           >
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-amber-500"></div>
             <h1 className="text-2xl font-sans mb-4 font-bold">
               {" "}
               Latest Budgets
             </h1>
-            <div className="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100  h-[800px] flex flex-col divide-y-4 divide-gray-200 ">
-              <Budgetcards />
-              <Budgetcards />
-              <Budgetcards />
-              <Budgetcards />
-              <Budgetcards />
+
+            <div className="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100  h-[1400px] flex flex-col divide-y-4 divide-gray-200 ">
+              {budgetdata.map((budget) => (
+                <Link
+                  key={budget.$id}
+                  href={{
+                    pathname: "/budgetdetail", // or whatever your detail page route is
+                    query: {
+                      id: budget.$id,
+                      name: budget.CategoryName,
+                      amount: budget.Amount,
+                    },
+                  }}
+                >
+                  <Budgetcards
+                    name={budget.CategoryName}
+                    amount={budget.Amount}
+                    category={budget.BudgetName}
+                    // amountexpense={amount}
+                  />
+                </Link>
+              ))}
+
               <ProgressiveBlur
-                height="25%"
+                height="20%"
                 position="bottom"
                 className={"absolute"}
               />
@@ -154,12 +227,12 @@ function page() {
           </div>
         </div>
 
-        <div
+        {/* <div
           id="piechart"
           className="w-full border  flex justify-center items-center mt-10 text-center"
         >
-          <Dashboardpie />
-        </div>
+         
+        </div> */}
       </div>
     </div>
   );

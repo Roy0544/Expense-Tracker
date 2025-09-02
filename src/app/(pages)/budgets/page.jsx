@@ -8,15 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { login } from "@/store/authSlice";
 import { allbudgets } from "@/store/budgetSlice";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 function page() {
   const authstate = useSelector((state) => state.auth.status);
+  const exp = useSelector((state) => state.expense.filterExpenses);
+
   const [budgets, setbudgets] = useState([]);
   const [searchinput, setsearchinput] = useState("");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [viewMode, setViewMode] = useState("grid"); // grid or list
   const dispatch = useDispatch();
+
   useEffect(() => {
     const Checkstattus = async () => {
       try {
@@ -47,78 +52,350 @@ function page() {
     getcategories();
   }, []);
 
+  // Enhanced loading state
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
-        Loading...
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mb-4"></div>
+        <p className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+          Loading your budgets...
+        </p>
       </div>
     );
   }
 
+  // Enhanced auth check
   if (authstate === false) {
     return (
-      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
-        Please Login To Access Budget
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 text-center max-w-md">
+          <svg
+            className="w-16 h-16 text-blue-500 mx-auto mb-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+            Access Required
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Please login to access your budget dashboard
+          </p>
+          <Link href="/login">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
+              Go to Login
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
+
   const handleSearch = (e) => {
     setsearchinput(e.target.value);
   };
+
   const filtered = budgets.filter((bud) =>
     bud.CategoryName.toLowerCase().includes(searchinput.toLowerCase())
   );
+
+  const amount = exp.reduce(
+    (total, item) => total + Number(item.expenseAmount),
+    0
+  );
+
+  // Calculate summary statistics
+  const totalBudgetAmount = budgets.reduce(
+    (total, item) => total + Number(item.Amount),
+    0
+  );
+  const averageBudget =
+    budgets.length > 0 ? totalBudgetAmount / budgets.length : 0;
+
   return (
-    <div>
-      <div className="w-[90vw] mx-auto mt-10 border h-auto p-6 dark:text-slate-100 text-[#374151] bg-slate-100 dark:bg-black rounded-md shadow-2xl ">
-        <div className="flex w-full justify-between items-center h-18 ">
-          <div className="flex gap-4 items-center">
-            <h1 className="   text-4xl font-heading tracking-wide bg-gradient-to-r from-green-700 to-sky-600 bg-clip-text text-transparent h-auto  ">
-              My Budgets
-            </h1>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-funnel-plus-icon lucide-funnel-plus"
+    <div className="w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900 mt-11">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 via-gray-700 to-green-800 text-white w-full  rounded-2xl">
+        <div className="w-full mx-auto py-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            {/* Title Section */}
+            <div className="flex-1  px-4 ">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="bg-white/10 backdrop-blur-sm p-3 rounded-2xl">
+                  <svg
+                    className="w-8 h-8 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 15v-4a2 2 0 012-2h4a2 2 0 012 2v4M8 15h8"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                    My Budgets
+                  </h1>
+                  <p className="text-blue-100 text-lg mt-2">
+                    Manage your financial categories and spending limits
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="flex flex-wrap gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
+                  <p className="text-blue-100 text-sm">Total Categories</p>
+                  <p className="text-2xl font-bold">{budgets.length}</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
+                  <p className="text-blue-100 text-sm">Total Budget</p>
+                  <p className="text-2xl font-bold">
+                    ${totalBudgetAmount.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
+                  <p className="text-blue-100 text-sm">Avg. per Category</p>
+                  <p className="text-2xl font-bold">
+                    ${Math.round(averageBudget).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="w-[90vw] mx-auto py-8">
+        {/* Controls Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            {/* Left Side - Filters and View Options */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
+              <div className="flex items-center gap-3">
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"
+                  />
+                </svg>
+                <span className="text-gray-700 dark:text-gray-300 font-medium">
+                  Filter & Search
+                </span>
+              </div>
+
+              {/* View Mode Toggle */}
+              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                    viewMode === "grid"
+                      ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                      : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                  }`}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                    viewMode === "list"
+                      ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                      : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                  }`}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Right Side - Search and Actions */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+              <CategoryAmountPopover />
+              <div className="relative">
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <Input
+                  type="search"
+                  className="pl-10 w-full sm:w-[280px] h-10 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Search budget categories..."
+                  onChange={handleSearch}
+                  value={searchinput}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Search Results Info */}
+          {searchinput && (
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {filtered.length === 0 ? (
+                  <span className="text-amber-600 dark:text-amber-400">
+                    No budgets found for "{searchinput}"
+                  </span>
+                ) : (
+                  <span>
+                    Found {filtered.length} budget
+                    {filtered.length !== 1 ? "s" : ""} matching "{searchinput}"
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Budget Cards Section */}
+        <div className="space-y-6">
+          {filtered.length === 0 ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+              <svg
+                className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                {searchinput
+                  ? "No matching budgets found"
+                  : "No budgets created yet"}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">
+                {searchinput
+                  ? "Try adjusting your search terms or create a new budget category."
+                  : "Get started by creating your first budget category to track your spending."}
+              </p>
+              {!searchinput && (
+                <CategoryAmountPopover>
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
+                    Create Your First Budget
+                  </Button>
+                </CategoryAmountPopover>
+              )}
+            </div>
+          ) : (
+            <div
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                  : "space-y-4"
+              }
             >
-              <path d="M13.354 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14v6a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341l1.218-1.348" />
-              <path d="M16 6h6" />
-              <path d="M19 3v6" />
-            </svg>
-          </div>
-          <div className="flex gap-4 items-centr h-auto ">
-            {/* <button className="w-[140px] border bg-green-500 text-white font-bold rounded-md h-10 hover:bg-green-600 transition px-1 ">
-              Create Budget
-            </button> */}
-            <CategoryAmountPopover />
-            <Input
-              type={"search"}
-              className={"w-[220px]"}
-              placeholder={"Search By Category Name "}
-              onChange={handleSearch}
-              value={searchinput}
-            />
-            <Button className={"bg-white text-black"}>Search</Button>
-          </div>
+              {filtered.map((budget) => (
+                <Link
+                  key={budget.$id}
+                  href={{
+                    pathname: "/budgetdetail",
+                    query: {
+                      id: budget.$id,
+                      name: budget.CategoryName,
+                      amount: budget.Amount,
+                    },
+                  }}
+                  className="block transition-transform duration-200 hover:scale-[1.02]"
+                >
+                  <Budgetcards
+                    name={budget.CategoryName}
+                    amount={budget.Amount}
+                    category={budget.BudgetName}
+                    // amountexpense={amount}
+                  />
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-        <div id="budgetscards" className=" mt-16 ">
-          <div className="grid grid-cols-1 gap-5 w-full  p-6  ">
-            {filtered.map((budget) => (
-              <Budgetcards
-                name={budget.CategoryName}
-                amount={budget.Amount}
-                key={budget.$id}
-              />
-            ))}
+
+        {/* Footer Summary */}
+        {/* {filtered.length > 0 && (
+          <div className="mt-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 border border-gray-200 dark:border-gray-600">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                  Budget Summary
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Showing {filtered.length} of {budgets.length} budget
+                  categories
+                </p>
+              </div>
+              <div className="flex gap-6 text-sm">
+                <div className="text-center">
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Total Allocated
+                  </p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    $
+                    {filtered
+                      .reduce((sum, budget) => sum + budget.Amount, 0)
+                      .toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )} */}
       </div>
     </div>
   );

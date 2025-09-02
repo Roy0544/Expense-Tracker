@@ -1,53 +1,125 @@
-// pages/dashboard.js or app/dashboard/page.js
-import { ExpenseDoughnutChart } from "./ExpensePieChart";
+import React from "react";
+import { useSelector } from "react-redux";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-export default function Dashboardpie() {
-  // Sample data - replace with your actual data from Appwrite
-  const expenseData = [
-    { category: "Food", amount: 450 },
-    { category: "Transport", amount: 180 },
-    { category: "Entertainment", amount: 250 },
-    { category: "Bills", amount: 280 },
-    { category: "Shopping", amount: 120 },
-    { category: "Health", amount: 80 },
-  ];
+// const data = [
+//   {
+//     name: "Page A",
+//     uv: 4000,
+//     pv: 2400,
+//   },
+//   {
+//     name: "Page B",
+//     uv: 2000,
+//     pv: 1398,
+//     amt: 2210,
+//   },
+//   {
+//     name: "Page C",
+//     uv: 100,
+//     pv: 9800,
+//     amt: 2290,
+//   },
+//   {
+//     name: "Page D",
+//     uv: 2780,
+//     pv: 3908,
+//     amt: 2000,
+//   },
+//   {
+//     name: "Page E",
+//     uv: 1890,
+//     pv: 4800,
+//     amt: 2181,
+//   },
+//   {
+//     name: "Page F",
+//     uv: 2390,
+//     pv: 3800,
+//     amt: 2500,
+//   },
+//   {
+//     name: "Page G",
+//     uv: 3490,
+//     pv: 4300,
+//     amt: 2100,
+//   },
+// ];
+
+const Example = ({ expense, filter }) => {
+  // const expense = useSelector((state) => state.expense.expenses);
+  // console.log(expense);
+  if (!expense || expense.length === 0) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "400px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <p>No expense data available</p>
+      </div>
+    );
+  }
+  const data = expense.map((exp) => {
+    const date = new Date(exp.$createdAt);
+    const dateTime12Hour = date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+
+      hour12: true,
+    });
+    // const monthName = date.toLocaleString("default", { month: "long" });
+    // const day = date.getDate();
+    // const finalDate = monthName + " " + day + idx;
+    return {
+      name: dateTime12Hour,
+
+      Amount: exp.expenseAmount || 0,
+      expensename: exp.expenseName || "Unknown",
+    };
+  });
 
   return (
-    <div className="p-2 space-y-4    ">
-      <h1 className="text-3xl font-heading">Expense Analytics</h1>
-
-      <div className=" ">
-        {/* Regular Pie Chart */}
-        {/* <div className="bg-card dark:bg-card p-6 rounded-lg shadow-lg">
-          <ExpensePieChart expenseData={expenseData} />
-        </div> */}
-
-        {/* Doughnut Chart with Center Total */}
-        <div className="bg-card dark:bg-card p-6 rounded-lg shadow-lg">
-          <ExpenseDoughnutChart expenseData={expenseData} />
-        </div>
-      </div>
-
-      {/* Expense Summary Cards */}
-      {/* <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {expenseData.map((item, index) => {
-          const total = expenseData.reduce(
-            (sum, expense) => sum + expense.amount,
-            0
-          );
-          const percentage = ((item.amount / total) * 100).toFixed(1);
-
-          return (
-            <div key={index} className="bg-card p-4 rounded-lg text-center">
-              <h3 className="font-accent text-sm text-muted-foreground">
-                {item.category}
-              </h3>
-              <p className="font-heading text-2xl">${item.amount}</p>
-              <p className="text-xs text-muted-foreground">{percentage}%</p>
-            </div>
-          );
-        })}
-      </div> */}
-    </div>
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart
+        width={500}
+        height={400}
+        data={data}
+        margin={{
+          top: 10,
+          right: 30,
+          left: 0,
+          bottom: 0,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="expensename" />
+        <YAxis />
+        <Tooltip />
+        <Area
+          type="monotone"
+          dataKey="Amount"
+          stroke="#8884d8"
+          fill="#8884d8"
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   );
-}
+};
+
+export default Example;

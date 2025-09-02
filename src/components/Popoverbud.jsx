@@ -41,7 +41,7 @@ export default function CategoryAmountPopover() {
         BudgetName: data.categorySelect,
       };
       const budget = await budgetservice.createBudget(payload);
-      dispatch(addBudget(budget));
+      // dispatch(addBudget(budget));
       console.log("Budget Created Succesfully", budget);
     } catch (error) {
       console.log("Budget Creation Failed at Form Side", error);
