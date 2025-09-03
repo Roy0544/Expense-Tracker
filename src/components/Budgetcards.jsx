@@ -11,19 +11,14 @@ import { Progress } from "@/components/ui/progress";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import Link from "next/link";
 
-export default function Budgetcards({
-  name,
-  amount,
-  amountexpense = 0,
-  category,
-}) {
+export default function Budgetcards({ name, amount, amountexpense, category }) {
   const percentage = amountexpense
     ? ((amountexpense / amount) * 100).toFixed(1)
     : 0;
   const remaining = amount - (amountexpense || 0);
   const isOverBudget = amountexpense > amount;
   const isNearLimit = percentage > 80 && !isOverBudget;
-  console.log(category);
+  // console.log(category);
 
   // Dynamic styling based on budget status
   const getCardStyles = () => {
@@ -79,9 +74,9 @@ export default function Budgetcards({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full border ">
       <Card
-        className={`w-[95%] mx-auto h-auto min-h-[200px] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 dark:text-slate-100 text-gray-700 ${styles.cardClass}`}
+        className={`w-[95%] mx-auto h-auto min-h-[420px] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 dark:text-slate-100 text-gray-700 ${styles.cardClass}`}
       >
         {/* Header Section */}
         <CardHeader className="pb-3">

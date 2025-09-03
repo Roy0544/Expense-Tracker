@@ -15,6 +15,9 @@ import expneseservice from "@/appwrite/expense";
 import { allbudgets } from "@/store/budgetSlice";
 import { allexpenses } from "@/store/expenseSlice";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+
+
 
 function page() {
   const dispatch = useDispatch();
@@ -54,18 +57,69 @@ function page() {
 
   const authstate = useSelector((state) => state.auth.status);
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.8 },
+    visible: { opacity: 1, y: 0, scale: 1 },
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const budgetListVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const budgetCardVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0 },
+  };
+
   if (authstate === false) {
     return (
-      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
-        Please Login To Access Dashboard
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen flex justify-center items-center text-3xl font-bold"
+      >
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: [0, 5, -5, 0],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          Please Login To Access Dashboard
+        </motion.div>
+      </motion.div>
     );
   }
   console.log(budgetdata);
 
   return (
     <div>
-      <div className="w-[90vw] mx-auto mt-10 border h-auto p-8 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-md shadow-2xl ring-1 ring-gray-900/5">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-[90vw] mx-auto mt-10 border h-auto p-8 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-md shadow-2xl ring-1 ring-gray-900/5"
+      >
         <div className="mb-4">
           <ComicText fontSize={3} className={"tracking-widest font-extrabold "}>
             My DashBoard
@@ -75,12 +129,22 @@ function page() {
         <p className="text-[18px] mt-5 text-center w-full">
           Track your budgets and expenses with elegant insights
         </p>
-        <div
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
           id="amounts"
           className="flex gap-5 mt-10 justify-between p-2 font-bold "
         >
-          <div
+          <motion.div
             id="budget"
+            variants={cardVariants}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className=" relative w-[230px] h-20  p-4 flex justify-between items-center rounded-xl shadow-md hover:ring-2 hover:ring-blue-500/20 hover:ring-offset-2 transition-all duration-200 bg-green-100 dark:bg-gray-800 border border-emerald-200 dark:border-emerald-700"
           >
             <ShineBorder shineColor={["#4CAF50", "#81C784", "#A5D6A7"]} />
@@ -109,10 +173,17 @@ function page() {
               <path d="M16 10h.01" />
               <path d="M2 8v1a2 2 0 0 0 2 2h1" />
             </svg>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
             id="expense"
+            variants={cardVariants}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className=" relative w-[230px] h-20  p-4 flex justify-between items-center rounded-xl shadow-md hover:ring-2 hover:ring-blue-500/20 hover:ring-offset-2 transition-all duration-200 bg-red-100 dark:bg-gray-800 border border-rose-200 dark:border-rose-700"
           >
             <ShineBorder shineColor={["#FF0000", "#B22222", "#8B0000"]} />
@@ -145,10 +216,17 @@ function page() {
               <path d="M6 12h.01" />
               <circle cx="12" cy="12" r="2" />
             </svg>
-          </div>
+          </motion.div>
 
-          <div
+          <motion.div
             id="budgetCount"
+            variants={cardVariants}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+            }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className=" relative w-[230px] h-20  p-4 flex justify-between items-center rounded-xl shadow-md hover:ring-2 hover:ring-blue-500/20 hover:ring-offset-2 transition-all duration-200 bg-amber-100  dark:bg-gray-800 border border-blue-200 dark:border-blue-700 "
           >
             <ShineBorder shineColor={["#FFC107", "#FFB300", "#FF8F00"]} />
@@ -176,16 +254,19 @@ function page() {
             >
               <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
             </svg>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <div className="flex justify-between mt-10 h-fit">
-          <div
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             id="chart"
-            className="w-[60%] h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-xl shadow-2xl p-0.5"
+            className="w-[60%] h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-xl shadow-2xl "
           >
             <Dashboard budget={budgetdata} expense={expensedata} />
-          </div>
+          </motion.div>
           <div
             id="group"
             className="w-[30%] h-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-4 relative overflow-hidden "
@@ -196,44 +277,60 @@ function page() {
               Latest Budgets
             </h1>
 
-            <div className="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100  h-[1400px] flex flex-col divide-y-4 divide-gray-200 ">
-              {budgetdata.map((budget) => (
-                <Link
-                  key={budget.$id}
-                  href={{
-                    pathname: "/budgetdetail", // or whatever your detail page route is
-                    query: {
-                      id: budget.$id,
-                      name: budget.CategoryName,
-                      amount: budget.Amount,
-                    },
-                  }}
-                >
-                  <Budgetcards
-                    name={budget.CategoryName}
-                    amount={budget.Amount}
-                    category={budget.BudgetName}
-                    // amountexpense={amount}
-                  />
-                </Link>
-              ))}
+            <motion.div
+              variants={budgetListVariants}
+              initial="hidden"
+              animate="visible"
+              className="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-100  h-[1400px] flex flex-col gap-2 divide-gray-200 "
+            >
+              {budgetdata.map((budget, idx) => {
+                const expense = expensedata.filter(
+                  (exp) => budget.$id === exp.budgets
+                );
+                const amount = expense.reduce(
+                  (total, item) => total + Number(item.expenseAmount),
+                  0
+                );
+                // console.log("matched expense for ", idx + "is", expense);
+
+                return (
+                  <motion.div
+                    key={budget.$id}
+                    variants={budgetCardVariants}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 200 }}
+                  >
+                    <Link
+                      href={{
+                        pathname: "/budgetdetail", // or whatever your detail page route is
+                        query: {
+                          id: budget.$id,
+                          name: budget.CategoryName,
+                          amount: budget.Amount,
+                        },
+                      }}
+                    >
+                      <Budgetcards
+                        name={budget.CategoryName}
+                        amount={budget.Amount}
+                        category={budget.BudgetName}
+                        amountexpense={amount}
+                        // amountexpense={amount}
+                      />
+                    </Link>
+                  </motion.div>
+                );
+              })}
 
               <ProgressiveBlur
                 height="20%"
                 position="bottom"
                 className={"absolute"}
               />
-            </div>
+            </motion.div>
           </div>
         </div>
-
-        {/* <div
-          id="piechart"
-          className="w-full border  flex justify-center items-center mt-10 text-center"
-        >
-         
-        </div> */}
-      </div>
+      </motion.div>
     </div>
   );
 }

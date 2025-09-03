@@ -9,6 +9,9 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import expneseservice from "@/appwrite/expense";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+
+
 
 function page() {
   const dispatch = useDispatch();
@@ -47,6 +50,32 @@ function page() {
   }, []);
 
   const authstate = useSelector((state) => state.auth.status);
+
+  const heroVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+        type: "spring",
+        damping: 20,
+      },
+    },
+  };
 
   // Enhanced loading state
   if (isCheckingAuth) {
@@ -103,14 +132,27 @@ function page() {
   const averageExpense = expenseCount > 0 ? totalExpenses / expenseCount : 0;
 
   return (
-    <div className="w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900 mt-11"
+    >
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-red-800 via-pink-800 to-red-600 text-white">
+      <motion.div
+        variants={heroVariants}
+        initial="hidden"
+        animate="visible"
+        className="bg-gradient-to-r from-red-800 via-pink-800 to-red-600 text-white rounded-2xl"
+      >
         <div className="w-full   mx-auto py-12">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             {/* Title Section */}
             <div className="flex-1 px-4">
-              <div className="flex items-center gap-4 mb-4">
+              <motion.div
+                variants={heroItemVariants}
+                className="flex items-center gap-4 mb-4"
+              >
                 <div className="bg-white/10 backdrop-blur-sm p-3 rounded-2xl">
                   <svg
                     className="w-8 h-8 text-white"
@@ -134,10 +176,10 @@ function page() {
                     Comprehensive view of your spending patterns
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Quick Stats */}
-              <div className="flex flex-wrap gap-4 mt-6">
+              <motion.div className="flex flex-wrap gap-4 mt-6">
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-pink-100 text-sm">Total Expenses</p>
                   <p className="text-2xl font-bold">{expenseCount}</p>
@@ -154,13 +196,13 @@ function page() {
                     ${Math.round(averageExpense).toLocaleString()}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Action Button */}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
       <div className="w-[90vw] mx-auto py-8">
@@ -242,77 +284,26 @@ function page() {
         {/* Content Based on View Mode */}
         <div className="space-y-8">
           {/* Chart Section */}
-          {(viewMode === "chart" || viewMode === "both") && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-                    <svg
-                      className="w-6 h-6 mr-3 text-rose-500"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-                      />
-                    </svg>
-                    Expense Distribution
-                  </h2>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Visual breakdown by category
-                  </div>
-                </div>
-              </div>
-              <div className="p-8">
-                <div className="w-full h-96 flex items-center justify-center">
-                  <Example expense={expenses} filter={dateFilter} />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Table Section */}
-          {(viewMode === "table" || viewMode === "both") && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-                    <svg
-                      className="w-6 h-6 mr-3 text-rose-500"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 17h6l3 3v-3h2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v8a2 2 0 002 2h2z"
-                      />
-                    </svg>
-                    Detailed Expense Records
-                  </h2>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {expenseCount} total entries
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-rose-600 border-rose-200 hover:bg-rose-50"
-                    >
+          <AnimatePresence mode="wait">
+            {(viewMode === "chart" || viewMode === "both") && (
+              <motion.div
+                key="chart-section"
+                initial={{ opacity: 0, x: -50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 50, scale: 0.95 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-600"
+                >
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
                       <svg
-                        className="w-4 h-4 mr-2"
+                        className="w-6 h-6 mr-3 text-rose-500"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -321,23 +312,120 @@ function page() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                          d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
                         />
                       </svg>
-                      Export Data
-                    </Button>
+                      Expense Distribution
+                    </h2>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Visual breakdown by category
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="overflow-hidden">
-                <DataTable />
-              </div>
-            </div>
-          )}
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                  className="p-8"
+                >
+                  <div className="w-full h-96 flex items-center justify-center">
+                    <Example expense={expenses} filter={dateFilter} />
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+
+            {/* Table Section */}
+            {(viewMode === "table" || viewMode === "both") && (
+              <motion.div
+                key="table-section"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+              >
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-600"
+                >
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                      <svg
+                        className="w-6 h-6 mr-3 text-rose-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 17h6l3 3v-3h2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v8a2 2 0 002 2h2z"
+                        />
+                      </svg>
+                      Detailed Expense Records
+                    </h2>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {expenseCount} total entries
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                      >
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        Export Data
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="overflow-hidden"
+                >
+                  <DataTable />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Empty State */}
           {expenseCount === 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.6,
+                ease: "easeOut",
+                type: "spring",
+                damping: 20,
+              }}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center"
+            >
               <svg
                 className="w-16 h-16 text-gray-400 mx-auto mb-4"
                 viewBox="0 0 24 24"
@@ -351,19 +439,19 @@ function page() {
                   d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"
                 />
               </svg>
-              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <motion.h3
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="text-xl font-semibold..."
+              >
                 No expenses recorded yet
-              </h3>
+              </motion.h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">
                 Start tracking your expenses to see detailed analytics and
                 insights.
               </p>
-              <Link href="/add-expense">
-                <Button className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2">
-                  Add Your First Expense
-                </Button>
-              </Link>
-            </div>
+            </motion.div>
           )}
         </div>
 
@@ -403,7 +491,7 @@ function page() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

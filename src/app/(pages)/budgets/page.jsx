@@ -11,12 +11,15 @@ import { allbudgets } from "@/store/budgetSlice";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
+import expneseservice from "@/appwrite/expense";
 
 function page() {
   const authstate = useSelector((state) => state.auth.status);
   const exp = useSelector((state) => state.expense.filterExpenses);
 
   const [budgets, setbudgets] = useState([]);
+  const [expenses, setexpenses] = useState([]);
   const [searchinput, setsearchinput] = useState("");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [viewMode, setViewMode] = useState("grid"); // grid or list
@@ -49,8 +52,38 @@ function page() {
         dispatch(allbudgets(categories));
       }
     };
+    const getexpenses = async () => {
+      const expense = await expneseservice.listexpenses();
+      setexpenses(expense.rows);
+    };
     getcategories();
+    getexpenses();
   }, []);
+
+  const heroVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+  const layoutTransition = {
+    type: "spring",
+    stiffness: 100,
+    damping: 20,
+  };
 
   // Enhanced loading state
   if (isCheckingAuth) {
@@ -120,10 +153,20 @@ function page() {
     budgets.length > 0 ? totalBudgetAmount / budgets.length : 0;
 
   return (
-    <div className="w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900 mt-11">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900 mt-11"
+    >
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-gray-700 to-green-800 text-white w-full  rounded-2xl">
-        <div className="w-full mx-auto py-12">
+      <motion.div
+        variants={heroVariants}
+        initial="hidden"
+        animate="visible"
+        className="bg-gradient-to-r from-blue-600 via-gray-700 to-green-800 text-white w-full  rounded-2xl"
+      >
+        <motion.div className="w-full mx-auto py-12">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             {/* Title Section */}
             <div className="flex-1  px-4 ">
@@ -160,7 +203,10 @@ function page() {
               </div>
 
               {/* Quick Stats */}
-              <div className="flex flex-wrap gap-4 mt-6">
+              <motion.div
+                variants={heroItemVariants}
+                className="flex flex-wrap gap-4 mt-6"
+              >
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-blue-100 text-sm">Total Categories</p>
                   <p className="text-2xl font-bold">{budgets.length}</p>
@@ -177,11 +223,11 @@ function page() {
                     ${Math.round(averageBudget).toLocaleString()}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Main Content */}
       <div className="w-[90vw] mx-auto py-8">
@@ -210,8 +256,16 @@ function page() {
               </div>
 
               {/* View Mode Toggle */}
-              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-                <button
+              <motion.div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    backgroundColor:
+                      viewMode === "grid" ? "#ffffff" : "transparent",
+                    color: viewMode === "grid" ? "#1f2937" : "#6b7280",
+                  }}
+                  transition={{ duration: 0.2 }}
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
                     viewMode === "grid"
@@ -230,8 +284,16 @@ function page() {
                     <rect x="14" y="14" width="7" height="7" />
                     <rect x="3" y="14" width="7" height="7" />
                   </svg>
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    backgroundColor:
+                      viewMode === "list" ? "#ffffff" : "transparent",
+                    color: viewMode === "list" ? "#1f2937" : "#6b7280",
+                  }}
+                  transition={{ duration: 0.2 }}
                   onClick={() => setViewMode("list")}
                   className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
                     viewMode === "list"
@@ -252,8 +314,8 @@ function page() {
                     <line x1="3" y1="12" x2="3.01" y2="12" />
                     <line x1="3" y1="18" x2="3.01" y2="18" />
                   </svg>
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </div>
 
             {/* Right Side - Search and Actions */}
@@ -283,18 +345,45 @@ function page() {
           {/* Search Results Info */}
           {searchinput && (
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <h2 className="text-sm text-gray-600 dark:text-gray-400">
                 {filtered.length === 0 ? (
-                  <span className="text-amber-600 dark:text-amber-400">
-                    No budgets found for "{searchinput}"
-                  </span>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg..."
+                  >
+                    <motion.svg
+                      initial={{ rotate: -10, scale: 0 }}
+                      animate={{ rotate: 0, scale: 1 }}
+                      transition={{
+                        delay: 0.2,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
+                      className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                    >
+                      {/* SVG content */}
+                    </motion.svg>
+
+                    <motion.h3
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-xl font-semibold..."
+                    >
+                      {searchinput
+                        ? "No matching budgets found"
+                        : "No budgets created yet"}
+                    </motion.h3>
+                  </motion.div>
                 ) : (
                   <span>
                     Found {filtered.length} budget
                     {filtered.length !== 1 ? "s" : ""} matching "{searchinput}"
                   </span>
                 )}
-              </p>
+              </h2>
             </div>
           )}
         </div>
@@ -321,11 +410,11 @@ function page() {
                   ? "No matching budgets found"
                   : "No budgets created yet"}
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">
+              <h2 className="text-gray-500 dark:text-gray-400 mb-6">
                 {searchinput
                   ? "Try adjusting your search terms or create a new budget category."
                   : "Get started by creating your first budget category to track your spending."}
-              </p>
+              </h2>
               {!searchinput && (
                 <CategoryAmountPopover>
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
@@ -335,69 +424,61 @@ function page() {
               )}
             </div>
           ) : (
-            <div
+            <motion.div
+              layout
+              transition={layoutTransition}
               className={
                 viewMode === "grid"
                   ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                   : "space-y-4"
               }
             >
-              {filtered.map((budget) => (
-                <Link
-                  key={budget.$id}
-                  href={{
-                    pathname: "/budgetdetail",
-                    query: {
-                      id: budget.$id,
-                      name: budget.CategoryName,
-                      amount: budget.Amount,
-                    },
-                  }}
-                  className="block transition-transform duration-200 hover:scale-[1.02]"
-                >
-                  <Budgetcards
-                    name={budget.CategoryName}
-                    amount={budget.Amount}
-                    category={budget.BudgetName}
-                    // amountexpense={amount}
-                  />
-                </Link>
-              ))}
-            </div>
+              {filtered.map((budget) => {
+                const exp = expenses.filter((e) => budget.$id === e.budgets);
+                const amount = exp.reduce(
+                  (total, item) => total + Number(item.expenseAmount),
+                  0
+                );
+                return (
+                  <motion.div
+                    key={budget.$id}
+                    layout
+                    layoutId={budget.$id} // Important for smooth transitions
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{
+                      scale: 1.01,
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                    }}
+                    transition={layoutTransition}
+                  >
+                    <Link
+                      key={budget.$id}
+                      href={{
+                        pathname: "/budgetdetail",
+                        query: {
+                          id: budget.$id,
+                          name: budget.CategoryName,
+                          amount: budget.Amount,
+                        },
+                      }}
+                      className="block transition-transform duration-200 hover:scale-[1.02]"
+                    >
+                      <Budgetcards
+                        name={budget.CategoryName}
+                        amount={budget.Amount}
+                        category={budget.BudgetName}
+                        amountexpense={amount}
+                      />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           )}
         </div>
-
-        {/* Footer Summary */}
-        {/* {filtered.length > 0 && (
-          <div className="mt-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 border border-gray-200 dark:border-gray-600">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                  Budget Summary
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Showing {filtered.length} of {budgets.length} budget
-                  categories
-                </p>
-              </div>
-              <div className="flex gap-6 text-sm">
-                <div className="text-center">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Total Allocated
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    $
-                    {filtered
-                      .reduce((sum, budget) => sum + budget.Amount, 0)
-                      .toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )} */}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

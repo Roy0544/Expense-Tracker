@@ -16,6 +16,8 @@ import { ArrowUpDown } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import expneseservice from "@/appwrite/expense";
 import { allexpenses, expensebyfilter } from "@/store/expenseSlice";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash2 } from "lucide-react";
 
 const columns = [
   { key: "id", label: "ID", sortable: true },
@@ -37,7 +39,89 @@ const columns = [
 //   { id: 9, name: "Ian", role: "Engineer" },
 //   { id: 10, name: "Julia", role: "Intern" },
 // ];
+const containerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+const searchVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
 
+const tableVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const headerVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
+
+const rowVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    x: -100,
+    scale: 0.9,
+    transition: {
+      duration: 0.3,
+      ease: "easeIn",
+    },
+  },
+};
+
+const paginationVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      delay: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 export default function DataTable({ Id }) {
   const dispatch = useDispatch();
   const [exdata, setexdata] = useState([]); // now stateful
@@ -128,71 +212,133 @@ export default function DataTable({ Id }) {
   };
 
   return (
-    <div className="p-6 space-y-4 dark:bg-black">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="p-6 space-y-4 dark:bg-black"
+    >
       {/* 🔍 Search Bar */}
-      <Input
-        placeholder="Search..."
-        className="w-[30%] h-full border shadow-md rounded-md outline-none "
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1); // reset to first page on search
-        }}
-      />
+      <motion.div variants={searchVariants}>
+        <Input
+          placeholder="Search expenses..."
+          className="w-[30%] h-full border shadow-md rounded-md outline-none transition-all duration-200 focus:shadow-lg"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1); // reset to first page on search
+          }}
+        />
+      </motion.div>
 
       {/* 📊 Table */}
-      <Table aria-label="Table with search, sort, pagination, and delete">
-        <TableHeader>
-          {columns.map((col) => (
-            <TableColumn key={col.key}>
-              <div
-                className={`flex items-center gap-1 ${
-                  col.sortable ? "cursor-pointer select-none" : ""
-                }`}
-                onClick={() => col.sortable && handleSort(col.key)}
-              >
-                {col.label}
-                {col.sortable && (
-                  <ArrowUpDown className="w-4 h-4 text-gray-500" />
-                )}
-              </div>
-            </TableColumn>
-          ))}
-        </TableHeader>
-
-        <TableBody>
-          {paginatedData.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.id}</TableCell>
-              <TableCell>{item.ExpenseName}</TableCell>
-              <TableCell>{item.ExpenseAmount}</TableCell>
-              <TableCell>
-                <Button
-                  size="sm"
-                  color="danger"
-                  onPress={() => handleDelete(item.originalId)}
+      <motion.div variants={tableVariants}>
+        <Table aria-label="Animated expense table">
+          <TableHeader>
+            {columns.map((col, index) => (
+              <TableColumn key={col.key}>
+                <motion.div
+                  variants={headerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: index * 0.05 }}
+                  className={`flex items-center gap-1 ${
+                    col.sortable ? "cursor-pointer select-none" : ""
+                  }`}
+                  onClick={() => col.sortable && handleSort(col.key)}
+                  whileHover={col.sortable ? { scale: 1.02 } : {}}
+                  whileTap={col.sortable ? { scale: 0.98 } : {}}
                 >
-                  Delete
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  {col.label}
+                  {col.sortable && (
+                    <motion.div
+                      animate={{
+                        rotate:
+                          sortConfig.key === col.key &&
+                          sortConfig.direction === "desc"
+                            ? 180
+                            : 0,
+                      }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ArrowUpDown className="w-4 h-4 text-gray-500" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              </TableColumn>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {paginatedData.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    {item.id}
+                  </motion.span>
+                </TableCell>
+                <TableCell>
+                  <motion.span
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 + 0.1 }}
+                  >
+                    {item.ExpenseName}
+                  </motion.span>
+                </TableCell>
+                <TableCell>
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 + 0.2 }}
+                    className="font-semibold text-red-500"
+                  >
+                    ${item.ExpenseAmount}
+                  </motion.span>
+                </TableCell>
+                <TableCell>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 + 0.3 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      size="sm"
+                      color="danger"
+                      onPress={() => handleDelete(item.originalId)}
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </motion.div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </motion.div>
 
       {/* 📑 Pagination Controls */}
-      <div className="flex justify-center w-full mt-4">
+      <motion.div
+        variants={paginationVariants}
+        className="flex justify-center w-full mt-4"
+      >
         <Pagination
           total={totalPages}
           page={page}
           onChange={setPage}
           showControls
           classNames={{
-            item: "min-w-[48px] h-10 text-base flex items-center justify-center", // all buttons
-            cursor: "hidden", // active state (background + color only)
+            item: "min-w-[48px] h-10 text-base flex items-center justify-center transition-all duration-200 hover:scale-105",
+            cursor: "hidden",
           }}
         />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

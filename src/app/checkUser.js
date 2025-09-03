@@ -13,10 +13,9 @@ export default function UserAuthClientComponent() {
       try {
         const response = await authservice.getCurrentUser();
         if (response) {
-            console.log("response is here", response);
+          console.log("response is here", response);
           dispatch(login(response));
-          router.push("/home");
-          
+          router.push("/dashboard");
         }
       } catch (error) {
         console.log("Cannot Get Current User", error);

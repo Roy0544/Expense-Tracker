@@ -24,7 +24,7 @@ function Logout() {
         onClick={handlelogout}
         variant={"outline"}
         className={
-          "bg-red-500 text-white font-bold text-[16px] font-sans dark:bg-red-500"
+          " bg-transparent text-black border-none hover:bg-red-500 hover:text-white font-bold text-[16px] font-sans dark:text-white"
         }
       >
         Logout

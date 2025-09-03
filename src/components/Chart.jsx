@@ -61,6 +61,11 @@ export function BudgetExpenseChart({ budgetData, theme }) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        bottom: 20, // ✅ ADDED: Extra padding for labels
+      },
+    },
     plugins: {
       legend: {
         position: "top",
@@ -98,6 +103,13 @@ export function BudgetExpenseChart({ budgetData, theme }) {
         stacked: true,
         ticks: {
           color: theme ? "#ffffff" : "#000000",
+          font: {
+            size: 6, // ✅ REDUCED from default - makes labels smaller
+            family: "var(--font-accent)", // ✅ ADDED: Use consistent font
+          },
+          maxRotation: 0, // Keep labels horizontal
+          minRotation: 0,
+          autoSkip: false,
         },
         grid: {
           color: theme ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
@@ -120,7 +132,7 @@ export function BudgetExpenseChart({ budgetData, theme }) {
   };
 
   return (
-    <div className="h-80 w-full">
+    <div className="h-80 w-full border ">
       <Bar data={chartData} options={options} key={chartKey} />
     </div>
   );

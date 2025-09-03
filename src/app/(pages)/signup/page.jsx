@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
 
+
 function SignUpPage() {
   const router = useRouter();
   const dispatch = useDispatch();

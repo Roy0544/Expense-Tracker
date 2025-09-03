@@ -45,7 +45,7 @@ export default function Dashboard({ budget, expense }) {
         </div>
       </div>
 
-      <div className="p-3 space-y-8 -mt-4">
+      <div className="p-1 space-y-8 -mt-4">
         {/* Main Chart Container - Enhanced */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
@@ -68,7 +68,7 @@ export default function Dashboard({ budget, expense }) {
               </h2>
             </div>
           </div>
-          <div className="p-4">
+          <div className="p-4 ">
             <BudgetExpenseChart budgetData={budgetData} theme={theme} />
           </div>
         </div>
