@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   budgets: [],
+  category: "",
 };
 
 const budgetSlice = createSlice({
@@ -13,7 +14,14 @@ const budgetSlice = createSlice({
     allbudgets(state, action) {
       state.budgets = action.payload;
     },
+    getbudgetcategory(state, action) {
+  if (action.payload === "All") {
+    state.category = "";
+  } else {
+    state.category = action.payload; // ✅ Only run when not "All"
+  }
+},
   },
 });
-export const { addBudget, allbudgets } = budgetSlice.actions;
+export const { addBudget, allbudgets, getbudgetcategory } = budgetSlice.actions;
 export default budgetSlice.reducer;

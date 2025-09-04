@@ -13,15 +13,18 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence, useAnimationControls } from "framer-motion";
 import expneseservice from "@/appwrite/expense";
+import Selectbudgets from "@/components/Selectbudgets";
 
 function page() {
   const authstate = useSelector((state) => state.auth.status);
   const exp = useSelector((state) => state.expense.filterExpenses);
+  const filter = useSelector((state) => state.budget.category);
 
   const [budgets, setbudgets] = useState([]);
   const [expenses, setexpenses] = useState([]);
   const [searchinput, setsearchinput] = useState("");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [badd, setbadd] = useState(false);
   const [viewMode, setViewMode] = useState("grid"); // grid or list
   const dispatch = useDispatch();
 
@@ -58,7 +61,7 @@ function page() {
     };
     getcategories();
     getexpenses();
-  }, []);
+  }, [badd]);
 
   const heroVariants = {
     hidden: { opacity: 0 },
@@ -138,6 +141,11 @@ function page() {
   const filtered = budgets.filter((bud) =>
     bud.CategoryName.toLowerCase().includes(searchinput.toLowerCase())
   );
+  const filterandcategory = filtered.filter((f) => {
+    if (!filter || filter === "") return true; // Show all if no category filter
+    return f.BudgetName.toLowerCase() === filter.toLowerCase();
+  });
+  console.log("filter is", filterandcategory);
 
   const amount = exp.reduce(
     (total, item) => total + Number(item.expenseAmount),
@@ -251,7 +259,7 @@ function page() {
                   />
                 </svg>
                 <span className="text-gray-700 dark:text-gray-300 font-medium">
-                  Filter & Search
+                  <Selectbudgets />
                 </span>
               </div>
 
@@ -320,7 +328,7 @@ function page() {
 
             {/* Right Side - Search and Actions */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <CategoryAmountPopover />
+              <CategoryAmountPopover badd={badd} setbadd={setbadd} />
               <div className="relative">
                 <svg
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -416,7 +424,7 @@ function page() {
                   : "Get started by creating your first budget category to track your spending."}
               </h2>
               {!searchinput && (
-                <CategoryAmountPopover>
+                <CategoryAmountPopover badd={badd} setbadd={setbadd}>
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
                     Create Your First Budget
                   </Button>
@@ -433,7 +441,7 @@ function page() {
                   : "space-y-4"
               }
             >
-              {filtered.map((budget) => {
+              {filterandcategory.map((budget) => {
                 const exp = expenses.filter((e) => budget.$id === e.budgets);
                 const amount = exp.reduce(
                   (total, item) => total + Number(item.expenseAmount),

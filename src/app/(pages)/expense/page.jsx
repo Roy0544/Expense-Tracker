@@ -11,8 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import expneseservice from "@/appwrite/expense";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
-
-
 function page() {
   const dispatch = useDispatch();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -469,13 +467,15 @@ function page() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm">
                 <div className="text-center">
-                  <p className="text-gray-500 dark:text-gray-400">This Month</p>
+                  <p className="text-gray-500 dark:text-gray-400">Total</p>
                   <p className="text-lg font-bold text-rose-600 dark:text-rose-400">
                     ${totalExpenses.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-gray-500 dark:text-gray-400">Avg. Daily</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Avg. Monthly
+                  </p>
                   <p className="text-lg font-bold text-pink-600 dark:text-pink-400">
                     ${Math.round(totalExpenses / 30).toLocaleString()}
                   </p>
@@ -483,7 +483,7 @@ function page() {
                 <div className="text-center">
                   <p className="text-gray-500 dark:text-gray-400">Categories</p>
                   <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                    {new Set(expenses.map((e) => e.category)).size}
+                    {new Set(expenses.map((e) => e.budgets)).size}
                   </p>
                 </div>
               </div>

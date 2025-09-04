@@ -122,7 +122,7 @@ const paginationVariants = {
     },
   },
 };
-export default function DataTable({ Id }) {
+export default function DataTable({ Id, eadd }) {
   const dispatch = useDispatch();
   const [exdata, setexdata] = useState([]); // now stateful
 
@@ -143,7 +143,7 @@ export default function DataTable({ Id }) {
       }
     };
     getexpenses();
-  }, []);
+  }, [eadd]);
 
   useEffect(() => {
     const firstdata = exdata.map((item, idx) => ({

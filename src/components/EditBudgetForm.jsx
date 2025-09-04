@@ -21,7 +21,6 @@ function EditBudgetForm({ budget, onUpdate, onCancel, ID }) {
     defaultValues: {
       CategoryName: budget.CategoryName,
       Amount: Number(budget.Amount),
-      BudgetName: budget.BudgetName || budget.CategoryName,
     },
   });
 
@@ -75,22 +74,6 @@ function EditBudgetForm({ budget, onUpdate, onCancel, ID }) {
             {errors.Amount && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.Amount.message}
-              </p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="BudgetName">Budget Name:</label>
-            <Input
-              {...register("BudgetName", {
-                required: "Budget name is required",
-              })}
-              type="text"
-              placeholder="Enter budget name"
-            />
-            {errors.BudgetName && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.BudgetName.message}
               </p>
             )}
           </div>

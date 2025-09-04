@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, percent } from "framer-motion";
 import {
   Mail,
   MapPin,
@@ -16,6 +16,9 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
+import authservice from "@/appwrite/auth";
+import budgetservice from "@/appwrite/budget";
+import expneseservice from "@/appwrite/expense";
 
 // Animation variants
 const containerVariants = {
@@ -60,20 +63,61 @@ const expenseItemVariants = {
 };
 
 export default function ExpenseTrackerUserProfile() {
-  const [user] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    phone: "+1 (555) 123-4567",
-    location: "New York, NY",
-    joinDate: "March 2023",
-    profileImage: "/api/placeholder/150/150",
-    membershipTier: "Premium",
-  });
+  const [user, setuser] = useState({});
+  const [budgetdata, setbudgetdata] = useState([]);
+  const [expensedata, setexpensedata] = useState([]);
+  const [isopen, setisopen] = useState(false);
 
-  const [financialStats] = useState([
+  const morehandler = () => {
+    setisopen(!isopen);
+  };
+  useEffect(() => {
+    const getuser = async () => {
+      const user = await authservice.getCurrentUser();
+      setuser(user);
+      console.log(user);
+    };
+    const getbudgets = async () => {
+      const budget = await budgetservice.listbudgets();
+      console.log(budget.rows);
+
+      setbudgetdata(budget.rows);
+    };
+    const getexpenses = async () => {
+      const expense = await expneseservice.listexpenses();
+      console.log(expense.rows);
+
+      setexpensedata(expense.rows);
+    };
+    getuser();
+    getbudgets();
+    getexpenses();
+  }, []);
+
+  // const [user] = useState({
+  //   name: "Alex Johnson",
+  //   email: "alex.johnson@email.com",
+  //   phone: "+1 (555) 123-4567",
+  //   location: "New York, NY",
+  //   joinDate: "March 2023",
+  //   profileImage: "/api/placeholder/150/150",
+  //   membershipTier: "Premium",
+  // });
+  const totalbudgetamount = budgetdata.reduce(
+    (total, item) => total + Number(item.Amount),
+    0
+  );
+
+  const totalexpenseamount = expensedata.reduce(
+    (total, item) => total + Number(item.expenseAmount),
+    0
+  );
+  // console.log("expense data", totalbudgetamount, totalexpenseamount);
+
+  const financialStats = [
     {
       label: "Total Budget",
-      value: 15000,
+      value: totalbudgetamount ? totalbudgetamount : 1,
       icon: Target,
       color: "from-emerald-500 to-emerald-600",
       bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
@@ -81,7 +125,7 @@ export default function ExpenseTrackerUserProfile() {
     },
     {
       label: "Total Expenses",
-      value: 9800,
+      value: totalexpenseamount,
       icon: CreditCard,
       color: "from-red-500 to-red-600",
       bgColor: "bg-red-50 dark:bg-red-900/20",
@@ -89,21 +133,33 @@ export default function ExpenseTrackerUserProfile() {
     },
     {
       label: "Remaining Budget",
-      value: 5200,
+      value: totalbudgetamount - totalexpenseamount,
       icon: DollarSign,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-900/20",
       change: "-7.1%",
     },
-    {
-      label: "Monthly Savings",
-      value: 2400,
-      icon: TrendingUp,
-      color: "from-purple-500 to-purple-600",
-      bgColor: "bg-purple-50 dark:bg-purple-900/20",
-      change: "+18.5%",
-    },
-  ]);
+  ];
+
+  const activity = [...budgetdata, ...expensedata];
+
+  const sortedBudgets = [...activity].sort(
+    (a, b) => new Date(b.$createdAt) - new Date(a.$createdAt)
+  );
+  // console.log(sortedBudgets);
+
+  const recentactivity = sortedBudgets.map((sort) => {
+    return {
+      id: sort.$id,
+      ename: sort.expenseName ? sort.expenseName : "",
+      bname: sort.CategoryName ? sort.CategoryName : "",
+      eamount: sort.expenseAmount,
+      bamount: sort.Amount,
+      icon: "🏷️",
+      date: sort.$createdAt,
+    };
+  });
+  console.log(recentactivity);
 
   const [recentExpenses] = useState([
     {
@@ -143,6 +199,9 @@ export default function ExpenseTrackerUserProfile() {
       icon: "🎬",
     },
   ]);
+  const percentage =
+    ((totalbudgetamount - totalexpenseamount) / totalbudgetamount) * 100;
+  console.log(percentage);
 
   const [budgetGoals] = useState([
     { category: "Food & Dining", spent: 1200, budget: 1500, percentage: 80 },
@@ -153,7 +212,7 @@ export default function ExpenseTrackerUserProfile() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-6"
+      className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-6 font-accent"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -175,8 +234,8 @@ export default function ExpenseTrackerUserProfile() {
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
             >
               <motion.img
-                src={user.profileImage}
-                alt={user.name}
+                src="/girl_avatar.jpg"
+                alt={user?.name}
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl"
                 initial={{ scale: 0, rotate: -10 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -187,31 +246,17 @@ export default function ExpenseTrackerUserProfile() {
                   delay: 0.3,
                 }}
               />
-              <motion.div
-                className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs px-3 py-1 rounded-full font-semibold"
-                initial={{ scale: 0, rotate: 10 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ delay: 0.6, type: "spring", stiffness: 400 }}
-              >
-                {user.membershipTier}
-              </motion.div>
             </motion.div>
 
             {/* User Info */}
             <div className="flex-1 text-center lg:text-left">
               <motion.h1
-                className="text-4xl font-bold text-gray-900 dark:text-white mb-2"
+                className="text-4xl font-bold text-gray-900 dark:text-white mb-2 capitalize "
                 variants={itemVariants}
               >
                 {user.name}
               </motion.h1>
-              <motion.p
-                className="text-xl text-blue-600 dark:text-blue-400 mb-4 font-medium"
-                variants={itemVariants}
-              >
-                Expense Tracker User
-              </motion.p>
-
+              <br />
               <motion.div
                 className="flex flex-col sm:flex-row gap-4 text-gray-500 dark:text-gray-400 mb-6"
                 variants={itemVariants}
@@ -226,7 +271,14 @@ export default function ExpenseTrackerUserProfile() {
                 </div>
                 <div className="flex items-center justify-center lg:justify-start gap-2">
                   <Calendar size={16} />
-                  <span>Member since {user.joinDate}</span>
+                  <span className="font-mono">
+                    {" "}
+                    Member since{" "}
+                    {new Date(user.$createdAt).toLocaleDateString("en-US", {
+                      month: "short", // "Aug"
+                      day: "numeric", // "31"
+                    })}
+                  </span>
                 </div>
               </motion.div>
 
@@ -235,53 +287,42 @@ export default function ExpenseTrackerUserProfile() {
                 className="flex flex-wrap gap-4 justify-center lg:justify-start"
                 variants={itemVariants}
               >
-                <div className="bg-emerald-100 dark:bg-emerald-900/20 px-4 py-2 rounded-lg">
-                  <span className="text-emerald-800 dark:text-emerald-400 font-semibold">
-                    Budget Health:{" "}
+                <div
+                  className={`${
+                    percentage < 80 ? "bg-emerald-100" : "bg-amber-100"
+                  }  dark:bg-emerald-900/20 px-4 py-2 rounded-lg`}
+                >
+                  <span className="text-gray-800 dark:text-gray-400 font-semibold">
+                    Budget Health:
                   </span>
-                  <span className="text-emerald-600 dark:text-emerald-300">
-                    Good
-                  </span>
+
+                  {percentage < 80 ? (
+                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                      {"  "}
+                      Good {"  "}
+                      {parseInt(percentage)}%
+                    </span>
+                  ) : (
+                    <span className="text-amber-700 dark:text-amber-400 font-bold">
+                      Critical
+                    </span>
+                  )}
                 </div>
                 <div className="bg-blue-100 dark:bg-blue-900/20 px-4 py-2 rounded-lg">
                   <span className="text-blue-800 dark:text-blue-400 font-semibold">
                     Active Budgets:{" "}
                   </span>
-                  <span className="text-blue-600 dark:text-blue-300">8</span>
+                  <span className="text-blue-600 dark:text-blue-300 font-mono ">
+                    {budgetdata.length}
+                  </span>
                 </div>
               </motion.div>
             </div>
-
-            {/* Action Buttons */}
-            <motion.div className="flex gap-4" variants={itemVariants}>
-              <motion.button
-                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
-                }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Edit3 size={18} />
-                Edit Profile
-              </motion.button>
-
-              <motion.button
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl font-medium"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Settings size={18} />
-                Settings
-              </motion.button>
-            </motion.div>
           </div>
         </motion.div>
         {/* Financial Stats Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
           variants={containerVariants}
         >
           {financialStats.map((stat, index) => {
@@ -303,22 +344,10 @@ export default function ExpenseTrackerUserProfile() {
                   >
                     <Icon size={24} className="text-white" />
                   </div>
-                  <div className="text-right">
-                    <div
-                      className={`text-sm font-semibold ${
-                        stat.change.startsWith("+")
-                          ? "text-emerald-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {stat.change}
-                    </div>
-                    <div className="text-xs text-gray-500">vs last month</div>
-                  </div>
                 </div>
 
                 <motion.h3
-                  className="text-3xl font-bold text-gray-900 dark:text-white mb-1"
+                  className="text-3xl font-bold text-gray-900 dark:text-white mb-1 font-mono"
                   initial={{ scale: 0.5 }}
                   animate={{ scale: 1 }}
                   transition={{
@@ -337,10 +366,10 @@ export default function ExpenseTrackerUserProfile() {
           })}
         </motion.div>
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-1 gap-8">
           {/* Recent Expenses */}
           <motion.div
-            className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-700"
+            className="lg:col-span-1 bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-700"
             variants={itemVariants}
           >
             <div className="flex items-center justify-between mb-6">
@@ -348,204 +377,82 @@ export default function ExpenseTrackerUserProfile() {
                 className="text-2xl font-bold text-gray-900 dark:text-white"
                 variants={itemVariants}
               >
-                Recent Expenses
+                Recent Activity
               </motion.h2>
               <motion.button
                 className="text-blue-600 hover:text-blue-700 font-medium"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={morehandler}
               >
                 View All
               </motion.button>
             </div>
 
-            <motion.div className="space-y-4" variants={containerVariants}>
-              {recentExpenses.map((expense, index) => (
-                <motion.div
-                  key={expense.id}
-                  variants={expenseItemVariants}
-                  whileHover={{
-                    x: 10,
-                    backgroundColor: "rgba(59, 130, 246, 0.05)",
-                    borderRadius: "16px",
-                  }}
-                  className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group"
-                >
+            <motion.div className="space-y-4 " variants={containerVariants}>
+              {(isopen ? recentactivity : recentactivity.slice(0, 8)).map(
+                (ac, index) => (
                   <motion.div
-                    className="text-2xl"
-                    initial={{ scale: 0, rotate: -90 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: 0.8 + index * 0.1,
-                      type: "spring",
-                      stiffness: 200,
+                    key={ac.id}
+                    variants={expenseItemVariants}
+                    whileHover={{
+                      x: 10,
+
+                      borderRadius: "16px",
                     }}
+                    className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group border  ${
+                      ac.ename
+                        ? "bg-red-200 dark:bg-red-900"
+                        : "bg-green-200 dark:bg-green-900"
+                    } `}
                   >
-                    {expense.icon}
-                  </motion.div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-900 dark:text-white font-semibold">
-                          {expense.description}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {expense.category} • {expense.date}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-red-600 dark:text-red-400">
-                          -${expense.amount}
-                        </p>
-                        <div className="flex items-center gap-1">
-                          {expense.status === "completed" ? (
-                            <CheckCircle
-                              size={12}
-                              className="text-emerald-500"
-                            />
+                    <motion.div
+                      className={`text-2xl `}
+                      initial={{ scale: 0, rotate: -90 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{
+                        delay: 0.8 + index * 0.1,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
+                    >
+                      {ac.icon}
+                    </motion.div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-gray-900 dark:text-white font-semibold capitalize">
+                            {ac.ename || ac.bname}
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-200 ">
+                            📅{" "}
+                            {new Date(ac.date).toLocaleDateString("en-US", {
+                              month: "long", // "Aug"
+                              day: "numeric", // "31"
+                            })}
+                          </p>
+                        </div>
+                        <div className="text-right font-mono">
+                          {ac.ename ? (
+                            <p className="text-lg font-bold text-red-600 dark:text-red-300">
+                              -${ac.eamount}
+                            </p>
                           ) : (
-                            <Clock size={12} className="text-orange-500" />
+                            <p className="text-lg font-bold text-green-600 dark:text-green-300">
+                              +${ac.bamount}
+                            </p>
                           )}
-                          <span
-                            className={`text-xs capitalize ${
-                              expense.status === "completed"
-                                ? "text-emerald-500"
-                                : "text-orange-500"
-                            }`}
-                          >
-                            {expense.status}
-                          </span>
+                          <div className="flex items-center gap-1"></div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                )
+              )}
             </motion.div>
           </motion.div>
 
           {/* Budget Goals & Quick Actions */}
-          <motion.div className="space-y-8" variants={itemVariants}>
-            {/* Budget Goals */}
-            <motion.div
-              className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 border border-gray-100 dark:border-gray-700"
-              variants={itemVariants}
-            >
-              <motion.h3
-                className="text-xl font-bold text-gray-900 dark:text-white mb-6"
-                variants={itemVariants}
-              >
-                Budget Goals
-              </motion.h3>
-
-              <motion.div className="space-y-4" variants={containerVariants}>
-                {budgetGoals.map((goal, index) => (
-                  <motion.div
-                    key={goal.category}
-                    variants={itemVariants}
-                    className="space-y-2"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {goal.category}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        ${goal.spent}/${goal.budget}
-                      </span>
-                    </div>
-                    <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <motion.div
-                        className={`absolute top-0 left-0 h-full rounded-full ${
-                          goal.percentage > 90
-                            ? "bg-red-500"
-                            : goal.percentage > 75
-                            ? "bg-yellow-500"
-                            : "bg-emerald-500"
-                        }`}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${goal.percentage}%` }}
-                        transition={{
-                          delay: 1 + index * 0.1,
-                          duration: 0.8,
-                          ease: "easeOut",
-                        }}
-                      />
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`text-xs font-medium ${
-                          goal.percentage > 90
-                            ? "text-red-500"
-                            : goal.percentage > 75
-                            ? "text-yellow-500"
-                            : "text-emerald-500"
-                        }`}
-                      >
-                        {goal.percentage}% used
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-
-            {/* Quick Actions */}
-            <motion.div
-              className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 border border-gray-100 dark:border-gray-700"
-              variants={itemVariants}
-            >
-              <motion.h3
-                className="text-xl font-bold text-gray-900 dark:text-white mb-6"
-                variants={itemVariants}
-              >
-                Quick Actions
-              </motion.h3>
-
-              <motion.div className="space-y-3" variants={containerVariants}>
-                {[
-                  {
-                    icon: Plus,
-                    label: "Add New Expense",
-                    color: "bg-blue-500 hover:bg-blue-600",
-                    link: "/add-expense",
-                  },
-                  {
-                    icon: Target,
-                    label: "Create Budget",
-                    color: "bg-emerald-500 hover:bg-emerald-600",
-                    link: "/create-budget",
-                  },
-                  {
-                    icon: PieChart,
-                    label: "View Reports",
-                    color: "bg-purple-500 hover:bg-purple-600",
-                    link: "/reports",
-                  },
-                  {
-                    icon: Settings,
-                    label: "Account Settings",
-                    color: "bg-gray-500 hover:bg-gray-600",
-                    link: "/settings",
-                  },
-                ].map((action, index) => (
-                  <motion.button
-                    key={action.label}
-                    variants={itemVariants}
-                    whileHover={{
-                      scale: 1.02,
-                      x: 5,
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`w-full flex items-center gap-3 p-4 rounded-xl text-white font-medium transition-all duration-200 ${action.color}`}
-                  >
-                    <action.icon size={20} />
-                    <span>{action.label}</span>
-                  </motion.button>
-                ))}
-              </motion.div>
-            </motion.div>
-          </motion.div>
         </div>{" "}
         {/* closes grid */}
       </div>{" "}
