@@ -195,7 +195,7 @@ function page() {
         <motion.div
           variants={headerVariants}
           id="top"
-          className="flex w-full justify-between items-center h-20 bg-gradient-to-r from-white via-blue-50 to-purple-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 px-8 rounded-xl shadow-lg relative overflow-hidden "
+          className=" flex-col md:flex-row flex h-auto w-full justify-between items-center p-1.5 bg-gradient-to-r from-white via-blue-50 to-purple-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 px-8 rounded-xl shadow-lg relative overflow-hidden "
         >
           {/* Animated Background Elements */}
           <motion.div
@@ -212,6 +212,7 @@ function page() {
           />
 
           {/* Enhanced Title */}
+
           <motion.div
             className="flex items-center gap-4 "
             whileHover={{ x: 5 }}
@@ -323,13 +324,13 @@ function page() {
         <motion.div
           variants={contentVariants}
           id="content"
-          className="w-full flex justify-between mt-11"
+          className="w-full flex flex-col md:flex-row gap-3 justify-between mt-11"
         >
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="border w-[45%] "
+            className="border w-full md:w-[45%] "
           >
             <Budgetcards
               name={budgetName}
@@ -342,7 +343,7 @@ function page() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="border w-[55%]"
+            className="border w-full md:w-[55%]"
           >
             <Addexpense
               Id={budgetId}

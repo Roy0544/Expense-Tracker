@@ -1,30 +1,50 @@
 "use client";
+
+import { useState, useEffect, useRef } from "react";
 import { Moon, SunDim } from "lucide-react";
-import { useState, useRef } from "react";
-import { flushSync } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useDispatch } from "react-redux";
 import { theme } from "@/store/authSlice";
 
-export const AnimatedThemeToggler = ({ className }) => {
+const STORAGE_KEY = "prefers-theme"; // light | dark
+
+export default function AnimatedThemeToggler({ className }) {
   const dispatch = useDispatch();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const buttonRef = useRef(null);
-  const changeTheme = async () => {
-    if (!buttonRef.current) return;
+  const [mounted, setMounted] = useState(false); // gate for SSR
+  const [isDark, setIsDark] = useState(false);
+  const btnRef = useRef(null); // ⭐ needed for animation
+
+  /* run only in the browser, once */
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    let dark;
+    if (saved === "dark") dark = true;
+    else if (saved === "light") dark = false;
+    else dark = false; // default = LIGHT
+
+    document.documentElement.classList.toggle("dark", dark);
+    setIsDark(dark);
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; // avoid hydration mismatch
+
+  /* toggle + persist + ✨ radial animation */
+  const toggle = async () => {
+    if (!btnRef.current) return;
 
     await document.startViewTransition(() => {
-      flushSync(() => {
-        const dark = document.documentElement.classList.toggle("dark");
-        setIsDarkMode(dark);
-        dispatch(theme());
-      });
+      const dark = document.documentElement.classList.toggle("dark");
+      setIsDark(dark);
+      localStorage.setItem(STORAGE_KEY, dark ? "dark" : "light");
+      dispatch(theme());
     }).ready;
 
-    const { top, left, width, height } =
-      buttonRef.current.getBoundingClientRect();
-    const y = top + height / 2;
+    // ⭐ original radial reveal
+    const { top, left, width, height } = btnRef.current.getBoundingClientRect();
     const x = left + width / 2;
+    const y = top + height / 2;
 
     const right = window.innerWidth - left;
     const bottom = window.innerHeight - top;
@@ -44,9 +64,15 @@ export const AnimatedThemeToggler = ({ className }) => {
       }
     );
   };
+
   return (
-    <button ref={buttonRef} onClick={changeTheme} className={cn(className)}>
-      {isDarkMode ? <SunDim /> : <Moon />}
+    <button
+      ref={btnRef}
+      onClick={toggle}
+      className={cn(className)}
+      aria-label="Toggle theme"
+    >
+      {isDark ? <SunDim /> : <Moon />}
     </button>
   );
-};
+}
