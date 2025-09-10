@@ -5,15 +5,18 @@ import { useRouter } from "next/navigation";
 import authservice from "@/appwrite/auth";
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/authSlice";
+import { resetBudgets } from "@/store/budgetSlice";
+import { resetexpenses } from "@/store/expenseSlice";
 function Logout() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const handlelogout = () => {
+  const handlelogout = async () => {
     try {
-      authservice.logout().then(() => {
-        dispatch(logout());
-        router.push("/");
-      });
+      await authservice.logout();
+      dispatch(logout());
+      dispatch(resetBudgets()); // Add this
+      dispatch(resetexpenses());
+      router.push("/");
     } catch (error) {
       console.log("Logout Failed at Form Side", error);
     }

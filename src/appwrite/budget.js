@@ -1,5 +1,5 @@
 import conf from "@/conf/conf";
-import { Client, ID, TablesDB } from "appwrite";
+import { Client, ID, TablesDB, Query } from "appwrite";
 
 export class BudgetService {
   client = new Client();
@@ -10,7 +10,7 @@ export class BudgetService {
       .setProject(conf.projectId);
     this.tabledb = new TablesDB(this.client); // Your project ID
   }
-  async createBudget({ CategoryName, Amount, BudgetName }) {
+  async createBudget({ CategoryName, Amount, BudgetName, userId }) {
     try {
       return await this.tabledb.createRow(
         conf.databaseId,
@@ -20,6 +20,7 @@ export class BudgetService {
           CategoryName,
           Amount,
           BudgetName,
+          userId,
         }
       );
     } catch (error) {
@@ -27,15 +28,17 @@ export class BudgetService {
       throw error;
     }
   }
-  async listbudgets() {
+  async listbudgets(userId) {
     try {
-      return await this.tabledb.listRows(conf.databaseId, conf.budgetsTableId);
+      return await this.tabledb.listRows(conf.databaseId, conf.budgetsTableId, [
+        Query.equal("userId", userId),
+      ]);
     } catch (error) {
       console.log("Failed to list budgets", error);
       throw error;
     }
   }
-  async updateBudget(budgetId, { CategoryName, Amount, BudgetName }) {
+  async updateBudget(budgetId, { CategoryName, Amount, BudgetName, userId }) {
     try {
       return await this.tabledb.updateRow(
         conf.databaseId,
@@ -45,6 +48,7 @@ export class BudgetService {
           CategoryName,
           Amount,
           BudgetName,
+          userId,
         }
       );
     } catch (error) {

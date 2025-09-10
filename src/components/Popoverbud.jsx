@@ -50,12 +50,13 @@ const buttonVariants = {
   },
 };
 
-export default function CategoryAmountPopover({ badd, setbadd }) {
+export default function CategoryAmountPopover({ badd, setbadd, userid }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const popoverRef = useRef(null);
   const buttonRef = useRef(null);
   const dispatch = useDispatch();
+  console.log("user id at adding time is ", userid);
 
   const {
     register,
@@ -90,6 +91,7 @@ export default function CategoryAmountPopover({ badd, setbadd }) {
         CategoryName: data.categoryName,
         Amount: amountnum,
         BudgetName: data.categorySelect,
+        userId: userid,
       };
       const budget = await budgetservice.createBudget(payload);
       console.log("Budget Created Successfully Please Refresh", budget);
@@ -116,7 +118,7 @@ export default function CategoryAmountPopover({ badd, setbadd }) {
       <motion.button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold shadow-lg"
+        className="px-3 md:px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold shadow-lg"
         initial={{ scale: 1 }}
         whileHover={{
           scale: 1.05,

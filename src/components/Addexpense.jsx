@@ -67,9 +67,10 @@ const buttonVariants = {
   },
 };
 
-function Addexpense({ Id, seteadd, eadd }) {
+function Addexpense({ Id, seteadd, eadd, userid }) {
   const dispatch = useDispatch();
   const [isSuccess, setIsSuccess] = useState(false); // ✅ Success message state
+  console.log("userid in add expens eis ", userid);
 
   const {
     register,
@@ -85,6 +86,7 @@ function Addexpense({ Id, seteadd, eadd }) {
         expenseName: data.name,
         expenseAmount: Number(data.amount),
         budgetId: Id,
+        userId: userid,
       };
       const expense = await expneseservice.createExpense(expenese);
       console.log("Expense Created Successfully", expense);

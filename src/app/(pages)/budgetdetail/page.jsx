@@ -39,6 +39,7 @@ const contentVariants = {
 };
 
 function page() {
+  const authstate = useSelector((state) => state.auth.status);
   const toast = useRef(null);
   const searchParams = useSearchParams();
   const budgetName = searchParams.get("name");
@@ -48,6 +49,8 @@ function page() {
   const [expenseamount, setexpenseamount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [eadd, seteadd] = useState(false);
+  const [userid, setuserid] = useState("");
+
   const [currentBudget, setCurrentBudget] = useState({
     $id: budgetId,
     CategoryName: budgetName,
@@ -61,6 +64,7 @@ function page() {
       try {
         const user = await authservice.getCurrentUser();
         if (user) {
+          setuserid(user.$id);
           dispatch(login(user));
         }
       } catch (error) {
@@ -73,7 +77,10 @@ function page() {
     Checkstattus();
   }, []);
 
-  const authstate = useSelector((state) => state.auth.status);
+  useEffect(() => {
+    if (authstate === false) {
+    }
+  }, [authstate]);
   const exp = useSelector((state) => state.expense.filterExpenses);
   console.log("expense amoount is ", exp);
 
@@ -130,7 +137,7 @@ function page() {
           // Remove 'await' - show() is not async
           severity: "success",
           summary: "Updated",
-          detail: "Budget Updated successfully!",
+          detail: "Budget deleted successfully!",
           life: 3000,
         });
       } else {
@@ -337,7 +344,12 @@ function page() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="border w-[55%]"
           >
-            <Addexpense Id={budgetId} eadd={eadd} seteadd={seteadd} />
+            <Addexpense
+              Id={budgetId}
+              eadd={eadd}
+              seteadd={seteadd}
+              userid={userid}
+            />
           </motion.div>
         </motion.div>
 
@@ -349,7 +361,7 @@ function page() {
           className="bg-white p-6 rounded-lg shadow-lg mt-10 dark:border border-gray-400 dark:bg-black"
         >
           <h1 className="text-3xl">Latest Expenses</h1>
-          <DataTable Id={budgetId} eadd={eadd} />
+          <DataTable Id={budgetId} eadd={eadd} userid={userid} />
         </motion.div>
       </motion.div>
     </div>

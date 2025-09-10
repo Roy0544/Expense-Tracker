@@ -17,35 +17,46 @@ import { allexpenses } from "@/store/expenseSlice";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-
-
 function page() {
+  const authstate = useSelector((state) => state.auth.status);
   const dispatch = useDispatch();
   const [budgetdata, setbudgetdata] = useState([]);
   const [expensedata, setexpensedata] = useState([]);
   useEffect(() => {
-    const getallbudgets = async () => {
-      const bud = await budgetservice.listbudgets();
+    const getcurrentuser = async () => {
+      try {
+        const user = await authservice.getCurrentUser();
+        if (user) {
+          dispatch(login(user));
+          await getallbudgets(user.$id);
+          await getallexpense(user.$id);
+        }
+      } catch (error) {
+        console.log("Error getting current user:", error);
+      }
+    };
+    const getallbudgets = async (userId) => {
+      const bud = await budgetservice.listbudgets(userId);
       setbudgetdata(bud.rows);
       // dispatch(allbudgets(bud.rows))
       console.log(bud.rows);
     };
-    const getcurrentuser = async () => {
-      const user = await authservice.getCurrentUser();
-      if (user) {
-        dispatch(login(user));
-      }
-    };
-    const getallexpense = async () => {
-      const exp = await expneseservice.listexpenses();
+    const getallexpense = async (userId) => {
+      const exp = await expneseservice.listexpenses(userId);
       setexpensedata(exp.rows);
       // dispatch(allexpenses(exp.rows))
       console.log(exp);
     };
-    getallbudgets();
+
     getcurrentuser();
-    getallexpense();
   }, []);
+
+  useEffect(() => {
+    if (authstate === false) {
+      setbudgetdata([]);
+      setexpensedata([]);
+    }
+  }, [authstate]);
   const amount = budgetdata.reduce(
     (total, item) => total + Number(item.Amount),
     0
@@ -54,8 +65,6 @@ function page() {
     (total, item) => total + Number(item.expenseAmount),
     0
   );
-
-  const authstate = useSelector((state) => state.auth.status);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.8 },
@@ -118,10 +127,10 @@ function page() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-[90vw] mx-auto mt-10 border h-auto p-8 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-md shadow-2xl ring-1 ring-gray-900/5"
+        className="w-full md:w-[90vw] mx-auto mt-10 border h-auto p-0 md:p-8 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-md shadow-2xl ring-1 ring-gray-900/5"
       >
         <div className="mb-4">
-          <ComicText fontSize={3} className={"tracking-widest font-extrabold "}>
+          <ComicText className={"tracking-widest font-bold "}>
             My DashBoard
           </ComicText>
         </div>
@@ -134,7 +143,7 @@ function page() {
           initial="hidden"
           animate="visible"
           id="amounts"
-          className="flex gap-5 mt-10 justify-between p-2 font-bold "
+          className=" flex flex-col md:flex-row items-center  gap-5 mt-10 justify-between p-2 font-bold "
         >
           <motion.div
             id="budget"
@@ -257,19 +266,19 @@ function page() {
           </motion.div>
         </motion.div>
 
-        <div className="flex justify-between mt-10 h-fit">
+        <div className=" flex flex-col lg:flex-row gap-13  lg:gap-10 mt-10 h-fit w-full  ">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             id="chart"
-            className="w-[60%] h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-xl shadow-2xl "
+            className=" w-full  lg:w-[60%]  h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-xl shadow-2xl "
           >
             <Dashboard budget={budgetdata} expense={expensedata} />
           </motion.div>
           <div
             id="group"
-            className="w-[30%] h-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-4 relative overflow-hidden "
+            className=" w-full lg:w-[35%] h-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-4 relative overflow-hidden "
           >
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-amber-500"></div>
             <h1 className="text-2xl font-sans mb-4 font-bold">
@@ -281,7 +290,7 @@ function page() {
               variants={budgetListVariants}
               initial="hidden"
               animate="visible"
-              className="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-100  h-[1400px] flex flex-col gap-2 divide-gray-200 "
+              className="overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-100  h-auto flex flex-col gap-2 divide-gray-200 "
             >
               {budgetdata.map((budget, idx) => {
                 const expense = expensedata.filter(

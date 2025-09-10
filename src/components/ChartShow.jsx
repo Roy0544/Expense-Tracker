@@ -27,7 +27,7 @@ export default function Dashboard({ budget, expense }) {
   });
 
   return (
-    <div className="p-6 space-y-8 bg-gray-50 dark:bg-gray-900 w-full border">
+    <div className="p-0.5 md:p-6 space-y-8 bg-gray-50 dark:bg-gray-900 w-full border">
       <div className="bg-gradient-to-r from-blue-600 via-blue-600 to-amber-600 text-white px-4 py-2 rounded-md w-full">
         <div className="flex items-center justify-between">
           <div>
@@ -36,10 +36,12 @@ export default function Dashboard({ budget, expense }) {
               Track your financial progress
             </p>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-1 md:p-4">
             <div className="text-center">
               <p className="text-blue-100 text-sm">Total Categories</p>
-              <p className="text-3xl font-bold">{budgetData.length}</p>
+              <p className="text-1xl md:text-2xl font-bold">
+                {budgetData.length}
+              </p>
             </div>
           </div>
         </div>
@@ -68,7 +70,7 @@ export default function Dashboard({ budget, expense }) {
               </h2>
             </div>
           </div>
-          <div className="p-4 ">
+          <div className="p-0 md:p-4 ">
             <BudgetExpenseChart budgetData={budgetData} theme={theme} />
           </div>
         </div>
@@ -148,12 +150,12 @@ export default function Dashboard({ budget, expense }) {
             >
               {" "}
               {/* Card Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
+              <div className="flex items-start  justify-between mb-4">
+                <div className="flex-1 ">
                   <h3 className="font-bold text-lg text-gray-800 dark:text-gray-200 mb-1">
                     {item.category}
                   </h3>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex  items-center ">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cardStyles.textColor} ${cardStyles.bgGradient}`}
                     >
@@ -165,9 +167,9 @@ export default function Dashboard({ budget, expense }) {
                     </span>
                   </div>
                 </div>
-                <div className={`p-2 rounded-lg ${cardStyles.bgGradient}`}>
+                <div className={`p-0.5 rounded-lg ${cardStyles.bgGradient}`}>
                   <svg
-                    className={`w-6 h-6 ${cardStyles.iconColor}`}
+                    className={`w-5 h-5 ${cardStyles.iconColor}`}
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -183,20 +185,20 @@ export default function Dashboard({ budget, expense }) {
               </div>
               {/* Financial Details */}
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <div className="text-left">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                <div className=" flex flex-col lg:flex-row  justify-between items-center">
+                  <div className="text-center">
+                    <p className="text-[13px] text-gray-500 dark:text-gray-400">
                       Spent
                     </p>
-                    <p className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                    <p className="text-[17px] font-bold text-gray-800 dark:text-gray-200">
                       ${item.spent.toLocaleString()}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-center">
+                    <p className="text-[13px] text-gray-500 dark:text-gray-400">
                       Budget
                     </p>
-                    <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                    <p className="text-[17px] font-semibold text-gray-600 dark:text-gray-300">
                       ${item.budget.toLocaleString()}
                     </p>
                   </div>
@@ -205,7 +207,7 @@ export default function Dashboard({ budget, expense }) {
                 {/* Enhanced Progress Bar */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-[12px] font-medium text-gray-700 dark:text-gray-300">
                       Progress
                     </span>
                     <span

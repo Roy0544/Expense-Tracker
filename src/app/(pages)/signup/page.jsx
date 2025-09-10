@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/authSlice";
 
-
 function SignUpPage() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -29,7 +28,7 @@ function SignUpPage() {
         dispatch(login(account));
       }
 
-      router.push("/home");
+      router.push("/dashboard");
     } catch (error) {
       console.log("Account Creation Failed at Form Side", error);
       throw error;

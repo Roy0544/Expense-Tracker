@@ -122,7 +122,7 @@ const paginationVariants = {
     },
   },
 };
-export default function DataTable({ Id, eadd }) {
+export default function DataTable({ Id, eadd, expense, userid }) {
   const dispatch = useDispatch();
   const [exdata, setexdata] = useState([]); // now stateful
 
@@ -130,13 +130,16 @@ export default function DataTable({ Id, eadd }) {
   useEffect(() => {
     const getexpenses = async () => {
       if (Id) {
-        const filteredExp = await expneseservice.listexpensesbybudget(Id);
+        const filteredExp = await expneseservice.listexpensesbybudget(
+          Id,
+          userid
+        );
         dispatch(expensebyfilter(filteredExp.rows || []));
         console.log("Filtered expenses:", filteredExp);
         setexdata(filteredExp.rows || []);
         // console.log("Budget ID being used:", Id);
       } else {
-        const response = await expneseservice.listexpenses();
+        const response = await expneseservice.listexpenses(userid);
         setexdata(response.rows || []);
         dispatch(allexpenses(response.rows));
         console.log("epxense here is", response);

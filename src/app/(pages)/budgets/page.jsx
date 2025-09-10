@@ -26,6 +26,7 @@ function page() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [badd, setbadd] = useState(false);
   const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [userid, setuserid] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -34,6 +35,9 @@ function page() {
         const user = await authservice.getCurrentUser();
         if (user) {
           dispatch(login(user));
+          setuserid(user.$id);
+          await getcategories(user.$id);
+          await getexpenses(user.$id);
         }
       } catch (error) {
         console.log("No User Logged In", error);
@@ -42,12 +46,8 @@ function page() {
         setIsCheckingAuth(false);
       }
     };
-    Checkstattus();
-  }, []);
-
-  useEffect(() => {
-    const getcategories = async () => {
-      const categories = await budgetservice.listbudgets();
+    const getcategories = async (userId) => {
+      const categories = await budgetservice.listbudgets(userId);
       setbudgets(categories.rows);
       console.log(categories);
 
@@ -55,13 +55,37 @@ function page() {
         dispatch(allbudgets(categories));
       }
     };
-    const getexpenses = async () => {
-      const expense = await expneseservice.listexpenses();
+    const getexpenses = async (userId) => {
+      const expense = await expneseservice.listexpenses(userId);
       setexpenses(expense.rows);
     };
-    getcategories();
-    getexpenses();
+    Checkstattus();
   }, [badd]);
+
+  // useEffect(() => {
+  //   const getcategories = async () => {
+  //     const categories = await budgetservice.listbudgets();
+  //     setbudgets(categories.rows);
+  //     console.log(categories);
+
+  //     if (categories) {
+  //       dispatch(allbudgets(categories));
+  //     }
+  //   };
+  //   const getexpenses = async () => {
+  //     const expense = await expneseservice.listexpenses();
+  //     setexpenses(expense.rows);
+  //   };
+  //   getcategories();
+  //   getexpenses();
+  // }, [badd]);
+
+  useEffect(() => {
+    if (authstate === false) {
+      setbudgets([]);
+      setexpenses([]);
+    }
+  }, [authstate]);
 
   const heroVariants = {
     hidden: { opacity: 0 },
@@ -264,7 +288,7 @@ function page() {
               </div>
 
               {/* View Mode Toggle */}
-              <motion.div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <motion.div className=" md:flex hidden bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -328,7 +352,11 @@ function page() {
 
             {/* Right Side - Search and Actions */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <CategoryAmountPopover badd={badd} setbadd={setbadd} />
+              <CategoryAmountPopover
+                badd={badd}
+                setbadd={setbadd}
+                userid={userid}
+              />
               <div className="relative">
                 <svg
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"

@@ -61,6 +61,7 @@ export function BudgetExpenseChart({ budgetData, theme }) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    barThickness: 30,
     layout: {
       padding: {
         bottom: 20, // ✅ ADDED: Extra padding for labels

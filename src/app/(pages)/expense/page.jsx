@@ -13,18 +13,41 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 function page() {
   const dispatch = useDispatch();
+  const authstate = useSelector((state) => state.auth.status);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [viewMode, setViewMode] = useState("chart"); // chart, table, or both
   const [dateFilter, setDateFilter] = useState("all"); // all, month, week
   const [expenses, setexpenses] = useState([]);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [userid, setuserid] = useState("");
+
   console.log(expenses);
 
+  const getWeekNumber = (date) => {
+    const targetDate = new Date(date.getTime());
+    targetDate.setHours(0, 0, 0, 0);
+    targetDate.setDate(
+      targetDate.getDate() + 3 - ((targetDate.getDay() + 6) % 7)
+    );
+    const week1 = new Date(targetDate.getFullYear(), 0, 4);
+    return (
+      1 +
+      Math.round(
+        ((targetDate.getTime() - week1.getTime()) / 86400000 -
+          3 +
+          ((week1.getDay() + 6) % 7)) /
+          7
+      )
+    );
+  };
   useEffect(() => {
     const Checkstattus = async () => {
       try {
         const user = await authservice.getCurrentUser();
         if (user) {
           dispatch(login(user));
+          setuserid(user.$id);
+          await getexpensedata(user.$id);
         }
       } catch (error) {
         console.log("No User Logged In", error);
@@ -33,9 +56,9 @@ function page() {
         setIsCheckingAuth(false);
       }
     };
-    const getexpensedata = async () => {
+    const getexpensedata = async (userId) => {
       try {
-        const exp = await expneseservice.listexpenses();
+        const exp = await expneseservice.listexpenses(userId);
         // console.log("expens ehere is ", exp);
         setexpenses(exp.rows);
       } catch (error) {
@@ -44,10 +67,66 @@ function page() {
       }
     };
     Checkstattus();
-    getexpensedata();
   }, []);
+  useEffect(() => {
+    let filterbydate = expenses; // Default to all expenses
 
-  const authstate = useSelector((state) => state.auth.status);
+    if (dateFilter === "month") {
+      const datetoday = new Date();
+      const monthnumber = datetoday.getMonth() + 1;
+      const yearnumber = datetoday.getFullYear();
+
+      filterbydate = expenses.filter((ex) => {
+        const expenseDate = new Date(ex.$createdAt);
+        return (
+          expenseDate.getMonth() + 1 === monthnumber &&
+          expenseDate.getFullYear() === yearnumber
+        );
+      });
+
+      console.log("Filtered expenses for this month:", filterbydate);
+      console.log("Number of expenses this month:", filterbydate.length);
+    } else if (dateFilter === "week") {
+      const datetoday = new Date();
+      const weeknumber = getWeekNumber(datetoday);
+      const yearnumber = datetoday.getFullYear();
+
+      filterbydate = expenses.filter((ex) => {
+        const expenseDate = new Date(ex.$createdAt);
+        return (
+          getWeekNumber(expenseDate) === weeknumber &&
+          expenseDate.getFullYear() === yearnumber
+        );
+      });
+
+      console.log("Filtered expenses for this week:", filterbydate);
+      console.log("Number of expenses this week:", filterbydate.length);
+    } else if (dateFilter === "today") {
+      const datetoday = new Date();
+      const today = datetoday.getDate();
+      const yearnumber = datetoday.getFullYear();
+      filterbydate = expenses.filter((ex) => {
+        const expenseDate = new Date(ex.$createdAt);
+        return (
+          expenseDate.getDate() === today &&
+          expenseDate.getFullYear() === yearnumber
+        );
+      });
+      console.log("Filtered expenses for  today:", filterbydate);
+      console.log("Number of expenses for today:", filterbydate.length);
+    } else {
+      setFilteredExpenses(expenses);
+    }
+
+    setFilteredExpenses(filterbydate);
+  }, [expenses, dateFilter]);
+
+  useEffect(() => {
+    if (authstate === false) {
+      setexpenses([]);
+      setFilteredExpenses([]);
+    }
+  }, [authstate]);
 
   const heroVariants = {
     hidden: { opacity: 0 },
@@ -75,8 +154,8 @@ function page() {
     },
   };
 
-  // Enhanced loading state
   if (isCheckingAuth) {
+    // Enhanced loading state
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-rose-600 mb-4"></div>
@@ -134,7 +213,7 @@ function page() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900 mt-11"
+      className="w-[95vw] md:w-[90vw] mx-auto bg-gray-50 dark:bg-gray-900 mt-11"
     >
       {/* Hero Section */}
       <motion.div
@@ -203,7 +282,7 @@ function page() {
       </motion.div>
 
       {/* Main Content */}
-      <div className="w-[90vw] mx-auto py-8">
+      <div className="w-full mx-auto py-8 ">
         {/* Controls Section */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
@@ -264,7 +343,11 @@ function page() {
             </div>
 
             {/* Right Side - Filters */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+            <div
+              className={` flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto ${
+                viewMode === "table" ? "hidden" : "flex"
+              }`}
+            >
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
@@ -330,10 +413,10 @@ function page() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
-                  className="p-8"
+                  className="p-1 md:p-8"
                 >
-                  <div className="w-full h-96 flex items-center justify-center">
-                    <Example expense={expenses} filter={dateFilter} />
+                  <div className="w-full h-96 flex      ">
+                    <Example expense={filteredExpenses} filter={dateFilter} />
                   </div>
                 </motion.div>
               </motion.div>
@@ -370,13 +453,13 @@ function page() {
                           d="M9 17h6l3 3v-3h2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v8a2 2 0 002 2h2z"
                         />
                       </svg>
-                      Detailed Expense Records
+                      All Expense Records
                     </h2>
                     <div className="flex items-center gap-4">
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         {expenseCount} total entries
                       </span>
-                      <Button
+                      {/* <Button
                         variant="outline"
                         size="sm"
                         className="text-rose-600 border-rose-200 hover:bg-rose-50"
@@ -395,7 +478,7 @@ function page() {
                           />
                         </svg>
                         Export Data
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </motion.div>
@@ -405,7 +488,7 @@ function page() {
                   transition={{ delay: 0.5 }}
                   className="overflow-hidden"
                 >
-                  <DataTable />
+                  <DataTable expense={filteredExpenses} userid={userid} />
                 </motion.div>
               </motion.div>
             )}

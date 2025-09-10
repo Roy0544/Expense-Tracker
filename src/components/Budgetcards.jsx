@@ -74,7 +74,7 @@ export default function Budgetcards({ name, amount, amountexpense, category }) {
   };
 
   return (
-    <div className="w-full border ">
+    <div className="w-full  ">
       <Card
         className={`w-[95%] mx-auto h-auto min-h-[420px] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 dark:text-slate-100 text-gray-700 ${styles.cardClass}`}
       >

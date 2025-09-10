@@ -16,9 +16,10 @@ const expenseSlice = createSlice({
     expensebyfilter(state, action) {
       state.filterExpenses = action.payload;
     },
+    resetexpenses: () => initialState,
   },
 });
 
-export const { addExpense, allexpenses, expensebyfilter } =
+export const { addExpense, allexpenses, expensebyfilter, resetexpenses } =
   expenseSlice.actions;
 export default expenseSlice.reducer;

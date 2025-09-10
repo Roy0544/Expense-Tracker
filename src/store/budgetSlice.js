@@ -15,13 +15,15 @@ const budgetSlice = createSlice({
       state.budgets = action.payload;
     },
     getbudgetcategory(state, action) {
-  if (action.payload === "All") {
-    state.category = "";
-  } else {
-    state.category = action.payload; // ✅ Only run when not "All"
-  }
-},
+      if (action.payload === "All") {
+        state.category = "";
+      } else {
+        state.category = action.payload; // ✅ Only run when not "All"
+      }
+    },
+    resetBudgets: () => initialState,
   },
 });
-export const { addBudget, allbudgets, getbudgetcategory } = budgetSlice.actions;
+export const { addBudget, allbudgets, getbudgetcategory, resetBudgets } =
+  budgetSlice.actions;
 export default budgetSlice.reducer;

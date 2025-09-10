@@ -19,6 +19,7 @@ import {
 import authservice from "@/appwrite/auth";
 import budgetservice from "@/appwrite/budget";
 import expneseservice from "@/appwrite/expense";
+import { useSelector } from "react-redux";
 
 // Animation variants
 const containerVariants = {
@@ -63,6 +64,8 @@ const expenseItemVariants = {
 };
 
 export default function ExpenseTrackerUserProfile() {
+  const authstate = useSelector((state) => state.auth.status);
+
   const [user, setuser] = useState({});
   const [budgetdata, setbudgetdata] = useState([]);
   const [expensedata, setexpensedata] = useState([]);
@@ -75,25 +78,30 @@ export default function ExpenseTrackerUserProfile() {
     const getuser = async () => {
       const user = await authservice.getCurrentUser();
       setuser(user);
+      await getbudgets(user.$id);
+      await getexpenses(user.$id);
       console.log(user);
     };
-    const getbudgets = async () => {
-      const budget = await budgetservice.listbudgets();
+    const getbudgets = async (userId) => {
+      const budget = await budgetservice.listbudgets(userId);
       console.log(budget.rows);
 
       setbudgetdata(budget.rows);
     };
-    const getexpenses = async () => {
-      const expense = await expneseservice.listexpenses();
+    const getexpenses = async (userId) => {
+      const expense = await expneseservice.listexpenses(userId);
       console.log(expense.rows);
 
       setexpensedata(expense.rows);
     };
     getuser();
-    getbudgets();
-    getexpenses();
   }, []);
-
+  useEffect(() => {
+    if (authstate === false) {
+      setbudgetdata([]);
+      setexpensedata([]);
+    }
+  }, [authstate]);
   // const [user] = useState({
   //   name: "Alex Johnson",
   //   email: "alex.johnson@email.com",
@@ -212,7 +220,7 @@ export default function ExpenseTrackerUserProfile() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-6 font-accent"
+      className="min-h-screen bg-gradient-to-br rounded-md from-gray-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 p-6 font-accent"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -296,15 +304,15 @@ export default function ExpenseTrackerUserProfile() {
                     Budget Health:
                   </span>
 
-                  {percentage < 80 ? (
+                  {percentage < 20 ? (
+                    <span className="text-amber-700 dark:text-amber-400 font-bold">
+                      Critical
+                    </span>
+                  ) : (
                     <span className="text-emerald-700 dark:text-emerald-400 font-bold">
                       {"  "}
                       Good {"  "}
                       {parseInt(percentage)}%
-                    </span>
-                  ) : (
-                    <span className="text-amber-700 dark:text-amber-400 font-bold">
-                      Critical
                     </span>
                   )}
                 </div>
