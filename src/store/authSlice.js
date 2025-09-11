@@ -1,13 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const getInitialTheme = () => {
-  if (typeof window !== "undefined") {
-    const savedTheme = localStorage.getItem("prefers-theme"); // Same key as AnimatedThemeToggler
-    return savedTheme === "dark";
-  }
-  return false; // Default for SSR
-};
-
 const initialState = {
   status: false,
   userdata: null,
