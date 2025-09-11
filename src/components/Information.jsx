@@ -3,59 +3,77 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 
 export default function AccordionDemo() {
   return (
     <Accordion
       type="single"
       collapsible
-      className="w-full text-black dark:text-slate-100 "
+      className="w-full text-black dark:text-slate-100"
       defaultValue="item-1"
     >
       <AccordionItem value="item-1">
-        <AccordionTrigger>Product Information</AccordionTrigger>
+        <AccordionTrigger>How does the expense tracking work?</AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
           <p>
-            Our flagship product combines cutting-edge technology with sleek
-            design. Built with premium materials, it offers unparalleled
-            performance and reliability.
+            Our expense tracker automatically categorizes your spending and
+            provides real-time insights into your financial habits.
           </p>
           <p>
-            Key features include advanced processing capabilities, and an
-            intuitive user interface designed for both beginners and experts.
+            Key features include smart categorization, budget alerts, spending
+            trends analysis, and detailed reports that help you understand where
+            your money goes each month.
           </p>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Shipping Details</AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-4 text-balance">
-          <p>
-            We offer worldwide shipping through trusted courier partners.
-            Standard delivery takes 3-5 business days, while express shipping
-            ensures delivery within 1-2 business days.
-          </p>
-          <p>
-            All orders are carefully packaged and fully insured. Track your
-            shipment in real-time through our dedicated tracking portal.
-          </p>
-        </AccordionContent>
-      </AccordionItem>
+
       <AccordionItem value="item-3">
-        <AccordionTrigger>Return Policy</AccordionTrigger>
+        <AccordionTrigger>Can I set up budgets and alerts?</AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
           <p>
-            We stand behind our products with a comprehensive 30-day return
-            policy. If you&apos;re not completely satisfied, simply return the
-            item in its original condition.
+            Yes! Create custom budgets for different categories like groceries,
+            entertainment, or utilities. Set spending limits and receive alerts
+            when you're approaching your budget limits.
           </p>
           <p>
-            Our hassle-free return process includes free return shipping and
-            full refunds processed within 48 hours of receiving the returned
-            item.
+            Our smart alert system helps you stay on track with your financial
+            goals. Get weekly summaries, monthly reports, and personalized
+            recommendations to improve your spending habits.
+          </p>
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="item-4">
+        <AccordionTrigger>
+          What analytics and reports are available?
+        </AccordionTrigger>
+        <AccordionContent className="flex flex-col gap-4 text-balance">
+          <p>
+            Access comprehensive spending analytics including pie charts, trend
+            graphs, and category breakdowns. See your spending patterns over
+            time and identify areas where you can save money.
+          </p>
+          <p></p>
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="item-5">
+        <AccordionTrigger>Is there a mobile app available?</AccordionTrigger>
+        <AccordionContent className="flex flex-col gap-4 text-balance">
+          <p>
+            Our expense tracker is fully responsive and works seamlessly on all
+            devices. While we don't have a dedicated mobile app yet, our web
+            application provides a native app-like experience on smartphones and
+            tablets.
+          </p>
+          <p>
+            Log expenses on the go, check your budgets, and view spending
+            analytics from anywhere. All your data syncs instantly across all
+            your devices for a consistent experience.
           </p>
         </AccordionContent>
       </AccordionItem>
     </Accordion>
-  )
+  );
 }

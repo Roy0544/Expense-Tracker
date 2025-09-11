@@ -219,13 +219,13 @@ export default function DataTable({ Id, eadd, expense, userid }) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="p-6 space-y-4 dark:bg-black"
+      className="p-3 md:p-6 space-y-4 dark:bg-black"
     >
       {/* 🔍 Search Bar */}
       <motion.div variants={searchVariants}>
         <Input
           placeholder="Search expenses..."
-          className="w-[30%] h-full border shadow-md rounded-md outline-none transition-all duration-200 focus:shadow-lg"
+          className="w-[60%] md:w-[30%] h-full border shadow-md rounded-md outline-none transition-all duration-200 focus:shadow-lg"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);

@@ -108,7 +108,7 @@ const Example = ({ expense, filter }) => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="expensename" />
+        <XAxis dataKey="expensename" stroke="#ffff" />
         <YAxis />
         <Tooltip />
         <Area

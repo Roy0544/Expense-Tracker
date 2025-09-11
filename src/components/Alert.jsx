@@ -19,7 +19,7 @@ function Alert({ onDelete }) {
       <AlertDialogTrigger asChild>
         <Button
           variant="destructive"
-          className="relative bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg border-0 transition-all duration-200"
+          className="relative bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold px-3 md:px-6 py-2 rounded-lg shadow-lg border-0 transition-all duration-200"
         >
           <motion.span
             className="flex items-center gap-2"

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { login } from "@/store/authSlice";
 function SignUpPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-
+  const [loginError, setLoginError] = useState("");
   const {
     register,
     handleSubmit,
@@ -20,18 +20,26 @@ function SignUpPage() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data);
+    console.log(data); // Now includes gender field
     try {
       const account = await authservice.createAccount(data);
-      console.log("Account Created Succesfully", account);
+      console.log("Account Created Successfully", account);
       if (account) {
         dispatch(login(account));
       }
-
       router.push("/dashboard");
     } catch (error) {
       console.log("Account Creation Failed at Form Side", error);
-      throw error;
+      if (error.field) {
+        // Field-specific error
+        setError(error.field, {
+          type: "server",
+          message: error.message,
+        });
+      } else {
+        // General error
+        setLoginError(error.message);
+      }
     }
   };
 
@@ -75,6 +83,32 @@ function SignUpPage() {
                 </p>
               )}
             </div>
+          </div>
+
+          {/* Gender Selection - NEW FIELD */}
+          <div>
+            <label
+              htmlFor="gender"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Gender
+            </label>
+            <select
+              id="gender"
+              {...register("gender", {
+                required: "Please select your gender",
+              })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            {errors.gender && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.gender.message}
+              </p>
+            )}
           </div>
 
           {/* Email */}
@@ -162,7 +196,7 @@ function SignUpPage() {
               {errors.agreeToTerms.message}
             </p>
           )}
-
+          <div>{loginError}</div>
           {/* Submit Button */}
           <Button
             type="submit"

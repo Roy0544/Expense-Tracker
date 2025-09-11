@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,12 @@ import authservice from "@/appwrite/auth";
 function LoginPage() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const [loginError, setLoginError] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm({ mode: "onBlur", reValidateMode: "onChange" });
 
   const onSubmit = async (data) => {
     console.log(data);
@@ -30,7 +31,16 @@ function LoginPage() {
       router.push("/dashboard");
     } catch (error) {
       console.log("Account Creation Failed at Form Side", error);
-      throw error;
+      if (error.field) {
+        // Field-specific error
+        setError(error.field, {
+          type: "server",
+          message: error.message,
+        });
+      } else {
+        // General error
+        setLoginError(error.message);
+      }
     }
   };
 
@@ -105,6 +115,7 @@ function LoginPage() {
               </p>
             )}
           </div>
+          <div className="text-red-500">{loginError}</div>
 
           {/* Submit Button */}
           <Button

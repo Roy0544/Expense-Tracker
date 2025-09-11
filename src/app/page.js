@@ -6,6 +6,8 @@ import { MarqueeDemo } from "@/components/Testimonials";
 
 import Information from "@/components/Information";
 import UserAuthClientComponent from "./checkUser";
+import FeaturesSection from "@/components/Landingcards";
+import Link from "next/link";
 
 export const metadata = {
   title: "Home",
@@ -31,13 +33,18 @@ export default function Home() {
             expense tracking that actually works.
           </p>
           <AnimatedShinyText>
-            <p className="font-sans font-bold text-[19px] text-amber-500">
-              💸 See your spending patterns →
-            </p>
+            <Link href="/login">
+              <button className="font-sans font-bold text-[19px] text-amber-500">
+                💸 See your spending patterns →
+              </button>
+            </Link>
           </AnimatedShinyText>
         </div>
         <div className="mt-[-75px] ">
           <HeroScrollDemo />
+        </div>
+        <div className="mb-14   ">
+          <FeaturesSection />
         </div>
         <div className="mt-[-76px] flex flex-col  items-center gap-6">
           <h2 className="text-4xl  font-heading text-blue-600 ">

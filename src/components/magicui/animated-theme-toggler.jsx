@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Moon, SunDim } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDispatch } from "react-redux";
-import { theme } from "@/store/authSlice";
+import { setTheme, theme } from "@/store/authSlice";
 
 const STORAGE_KEY = "prefers-theme"; // light | dark
 
@@ -25,6 +25,7 @@ export default function AnimatedThemeToggler({ className }) {
 
     document.documentElement.classList.toggle("dark", dark);
     setIsDark(dark);
+    dispatch(setTheme(dark));
     setMounted(true);
   }, []);
 

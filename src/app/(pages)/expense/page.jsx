@@ -486,9 +486,21 @@ function page() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
-                  className="overflow-hidden"
+                  className="w-full"
                 >
-                  <DataTable expense={filteredExpenses} userid={userid} />
+                  {/* Scrollable container */}
+                  <div className="overflow-x-auto -mx-6 px-6">
+                    <div className="min-w-full inline-block align-middle">
+                      <DataTable expense={filteredExpenses} userid={userid} />
+                    </div>
+                  </div>
+
+                  {/* Mobile scroll hint */}
+                  <div className="block sm:hidden text-center mt-2 p-1.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      ← Swipe to see more columns →
+                    </p>
+                  </div>
                 </motion.div>
               </motion.div>
             )}

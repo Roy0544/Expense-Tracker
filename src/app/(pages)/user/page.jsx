@@ -65,6 +65,8 @@ const expenseItemVariants = {
 
 export default function ExpenseTrackerUserProfile() {
   const authstate = useSelector((state) => state.auth.status);
+  const gender = useSelector((state) => state.auth.userdata);
+  console.log("gender is ", gender);
 
   const [user, setuser] = useState({});
   const [budgetdata, setbudgetdata] = useState([]);
@@ -80,7 +82,7 @@ export default function ExpenseTrackerUserProfile() {
       setuser(user);
       await getbudgets(user.$id);
       await getexpenses(user.$id);
-      console.log(user);
+      console.log("user details is ", user);
     };
     const getbudgets = async (userId) => {
       const budget = await budgetservice.listbudgets(userId);
@@ -125,7 +127,7 @@ export default function ExpenseTrackerUserProfile() {
   const financialStats = [
     {
       label: "Total Budget",
-      value: totalbudgetamount ? totalbudgetamount : 1,
+      value: totalbudgetamount ? totalbudgetamount : 0,
       icon: Target,
       color: "from-emerald-500 to-emerald-600",
       bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
@@ -304,15 +306,19 @@ export default function ExpenseTrackerUserProfile() {
                     Budget Health:
                   </span>
 
-                  {percentage < 20 ? (
+                  {percentage < 20 && !isNaN(percentage) ? (
                     <span className="text-amber-700 dark:text-amber-400 font-bold">
                       Critical
                     </span>
-                  ) : (
+                  ) : percentage >= 0 && !isNaN(percentage) ? (
                     <span className="text-emerald-700 dark:text-emerald-400 font-bold">
                       {"  "}
                       Good {"  "}
                       {parseInt(percentage)}%
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400 font-bold">
+                      No Data
                     </span>
                   )}
                 </div>

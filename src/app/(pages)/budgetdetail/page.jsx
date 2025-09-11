@@ -195,7 +195,7 @@ function page() {
         <motion.div
           variants={headerVariants}
           id="top"
-          className=" flex-col md:flex-row flex h-auto w-full justify-between items-center p-1.5 bg-gradient-to-r from-white via-blue-50 to-purple-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 px-8 rounded-xl shadow-lg relative overflow-hidden "
+          className=" flex-col md:flex-row flex h-auto w-full justify-between items-center p-1.5 bg-gradient-to-r from-white via-blue-50 to-purple-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 px-8 rounded-xl shadow-lg relative overflow-hidden  gap-4"
         >
           {/* Animated Background Elements */}
           <motion.div
@@ -224,7 +224,7 @@ function page() {
 
             <div className="flex flex-col gap-0.5">
               <motion.h1
-                className=" capitalize text-4xl font-bold font-accent bg-gradient-to-r from-gray-800 via-blue-600 to-purple-700 dark:from-gray-100 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent select-none"
+                className=" capitalize text-2xl md:text-4xl  font-bold  bg-gradient-to-r from-gray-800 via-blue-600 to-purple-700 dark:from-gray-100 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent select-none font-mono"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
@@ -242,7 +242,7 @@ function page() {
           </motion.div>
 
           {/* Enhanced Action Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 ">
             {/* Edit Button */}
             <motion.div
               whileHover={{
@@ -266,7 +266,7 @@ function page() {
               />
               <Button
                 onClick={handleEdit}
-                className="relative bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg border-0 transition-all duration-200"
+                className="relative bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold px-3 md:px-6 py-2 rounded-lg shadow-lg border-0 transition-all duration-200"
               >
                 <motion.span
                   className="flex items-center gap-2"
@@ -359,10 +359,23 @@ function page() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-white p-6 rounded-lg shadow-lg mt-10 dark:border border-gray-400 dark:bg-black"
+          className="bg-white p-3 md:p-6 rounded-lg shadow-lg mt-10 dark:border border-gray-400 dark:bg-black"
         >
           <h1 className="text-3xl">Latest Expenses</h1>
-          <DataTable Id={budgetId} eadd={eadd} userid={userid} />
+          <div className="w-full overflow-hidden">
+            <div className="overflow-x-auto scrollbar-hide">
+              <div className="min-w-full">
+                <DataTable Id={budgetId} eadd={eadd} userid={userid} />
+              </div>
+            </div>
+
+            {/* Scroll indicator for mobile */}
+            <div className="block sm:hidden text-center mt-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                ← Swipe to see more columns →
+              </p>
+            </div>
+          </div>
         </motion.div>
       </motion.div>
     </div>
