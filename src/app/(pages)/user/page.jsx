@@ -19,7 +19,10 @@ import {
 import authservice from "@/appwrite/auth";
 import budgetservice from "@/appwrite/budget";
 import expneseservice from "@/appwrite/expense";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { login } from "@/store/authSlice";
 
 // Animation variants
 const containerVariants = {
@@ -64,8 +67,9 @@ const expenseItemVariants = {
 };
 
 export default function ExpenseTrackerUserProfile() {
+  const dispatch = useDispatch();
   const authstate = useSelector((state) => state.auth.status);
-  const gender = useSelector((state) => state.auth.userdata);
+  const gender = useSelector((state) => state.auth.gender);
   console.log("gender is ", gender);
 
   const [user, setuser] = useState({});
@@ -79,7 +83,9 @@ export default function ExpenseTrackerUserProfile() {
   useEffect(() => {
     const getuser = async () => {
       const user = await authservice.getCurrentUser();
+      dispatch(login(user));
       setuser(user);
+
       await getbudgets(user.$id);
       await getexpenses(user.$id);
       console.log("user details is ", user);
@@ -219,6 +225,38 @@ export default function ExpenseTrackerUserProfile() {
     { category: "Entertainment", spent: 280, budget: 300, percentage: 93 },
     { category: "Utilities", spent: 450, budget: 600, percentage: 75 },
   ]);
+  if (authstate === false) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 text-center max-w-md">
+          <svg
+            className="w-16 h-16 text-blue-500 mx-auto mb-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+            Access Required
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Please login to access your budget dashboard
+          </p>
+          <Link href="/login">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
+              Go to Login
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -244,7 +282,7 @@ export default function ExpenseTrackerUserProfile() {
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
             >
               <motion.img
-                src="/girl_avatar.jpg"
+                src={gender === "male" ? "/male_avatar.jpg" : "girl_avatar.jpg"}
                 alt={user?.name}
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl"
                 initial={{ scale: 0, rotate: -10 }}
@@ -275,10 +313,7 @@ export default function ExpenseTrackerUserProfile() {
                   <Mail size={16} />
                   <span>{user.email}</span>
                 </div>
-                <div className="flex items-center justify-center lg:justify-start gap-2">
-                  <MapPin size={16} />
-                  <span>{user.location}</span>
-                </div>
+
                 <div className="flex items-center justify-center lg:justify-start gap-2">
                   <Calendar size={16} />
                   <span className="font-mono">
@@ -370,7 +405,7 @@ export default function ExpenseTrackerUserProfile() {
                     stiffness: 200,
                   }}
                 >
-                  ${stat.value.toLocaleString()}
+                  ₹{stat.value.toLocaleString()}
                 </motion.h3>
                 <p className="text-gray-600 dark:text-gray-400 font-medium">
                   {stat.label}
@@ -449,11 +484,11 @@ export default function ExpenseTrackerUserProfile() {
                         <div className="text-right font-mono">
                           {ac.ename ? (
                             <p className="text-lg font-bold text-red-600 dark:text-red-300">
-                              -${ac.eamount}
+                              -₹{ac.eamount}
                             </p>
                           ) : (
                             <p className="text-lg font-bold text-green-600 dark:text-green-300">
-                              +${ac.bamount}
+                              +₹{ac.bamount}
                             </p>
                           )}
                           <div className="flex items-center gap-1"></div>

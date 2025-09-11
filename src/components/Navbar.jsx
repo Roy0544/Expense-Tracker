@@ -194,14 +194,37 @@ function Navbar() {
             id="mobile"
             className="flex md:hidden items-center justify-center gap-1.5 font-accent "
           >
-            {theme ? "LightMode" : "DarkMode"}
             <AnimatedThemeToggler />
+            {!authstate ? (
+              <>
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    className={
+                      "bg-amber-500 text-white font-bold text-[18px] font-sans dark:bg-amber-500"
+                    }
+                  >
+                    Log In
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button
+                    variant={"outline"}
+                    className={
+                      "bg-blue-400 text-white font-bold text-[16px] font-sans dark:bg-blue-400"
+                    }
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </motion.div>
-      <div id="mobilenav">
-        <MobileNav />
-      </div>
+      <div id="mobilenav">{authstate ? <MobileNav /> : ""}</div>
     </>
   );
 }

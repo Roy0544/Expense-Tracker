@@ -16,6 +16,8 @@ import { allbudgets } from "@/store/budgetSlice";
 import { allexpenses } from "@/store/expenseSlice";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function page() {
   const authstate = useSelector((state) => state.auth.status);
@@ -160,7 +162,7 @@ function page() {
             <p className="font-light">
               Total Budget <br />{" "}
               <span className="text-green-600 font-mono">
-                ${" "}
+                ₹{" "}
                 <NumberTicker
                   value={amount}
                   className={"text-green-500 dark:text-green-400"}
@@ -199,7 +201,7 @@ function page() {
             <p className="font-light">
               Total Expense <br />{" "}
               <span className="text-red-500 font-mono  ">
-                ${" "}
+                ₹{" "}
                 <NumberTicker
                   value={expenseamount}
                   className={"text-red-500 dark:text-red-400"}
@@ -292,44 +294,74 @@ function page() {
               animate="visible"
               className="overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-100  h-auto flex flex-col gap-2 divide-gray-200 "
             >
-              {budgetdata.map((budget, idx) => {
-                const expense = expensedata.filter(
-                  (exp) => budget.$id === exp.budgets
-                );
-                const amount = expense.reduce(
-                  (total, item) => total + Number(item.expenseAmount),
-                  0
-                );
-                // console.log("matched expense for ", idx + "is", expense);
-
-                return (
+              {budgetdata.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-12"
+                >
                   <motion.div
-                    key={budget.$id}
-                    variants={budgetCardVariants}
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 200 }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="w-24 h-24 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-6"
                   >
-                    <Link
-                      href={{
-                        pathname: "/budgetdetail", // or whatever your detail page route is
-                        query: {
-                          id: budget.$id,
-                          name: budget.CategoryName,
-                          amount: budget.Amount,
-                        },
-                      }}
-                    >
-                      <Budgetcards
-                        name={budget.CategoryName}
-                        amount={budget.Amount}
-                        category={budget.BudgetName}
-                        amountexpense={amount}
-                        // amountexpense={amount}
-                      />
-                    </Link>
+                    <Target className="w-12 h-12 text-blue-500" />
                   </motion.div>
-                );
-              })}
+
+                  <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    No Budgets Yet
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+                    Start your financial journey by creating your first budget
+                    to track expenses and reach your goals.
+                  </p>
+
+                  <Link href="/budgets">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Your First Budget
+                    </Button>
+                  </Link>
+                </motion.div>
+              ) : (
+                budgetdata.map((budget, idx) => {
+                  const expense = expensedata.filter(
+                    (exp) => budget.$id === exp.budgets
+                  );
+                  const amount = expense.reduce(
+                    (total, item) => total + Number(item.expenseAmount),
+                    0
+                  );
+
+                  return (
+                    <motion.div
+                      key={budget.$id}
+                      variants={budgetCardVariants}
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                    >
+                      <Link
+                        href={{
+                          pathname: "/budgetdetail",
+                          query: {
+                            id: budget.$id,
+                            name: budget.CategoryName,
+                            amount: budget.Amount,
+                          },
+                        }}
+                      >
+                        <Budgetcards
+                          name={budget.CategoryName}
+                          amount={budget.Amount}
+                          category={budget.BudgetName}
+                          amountexpense={amount}
+                        />
+                      </Link>
+                    </motion.div>
+                  );
+                })
+              )}
 
               <ProgressiveBlur
                 height="20%"

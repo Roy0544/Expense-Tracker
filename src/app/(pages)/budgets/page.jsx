@@ -246,13 +246,13 @@ function page() {
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-blue-100 text-sm">Total Budget</p>
                   <p className="text-2xl font-bold">
-                    ${totalBudgetAmount.toLocaleString()}
+                    ₹{totalBudgetAmount.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-blue-100 text-sm">Avg. per Category</p>
                   <p className="text-2xl font-bold">
-                    ${Math.round(averageBudget).toLocaleString()}
+                    ₹{Math.round(averageBudget).toLocaleString()}
                   </p>
                 </div>
               </motion.div>
@@ -270,7 +270,7 @@ function page() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
               <div className="flex items-center gap-3">
                 <svg
-                  className="w-5 h-5 text-gray-500"
+                  className="w-5 h-5 text-gray-500 hidden md:block"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -469,47 +469,59 @@ function page() {
                   : "space-y-4"
               }
             >
-              {filterandcategory.map((budget) => {
-                const exp = expenses.filter((e) => budget.$id === e.budgets);
-                const amount = exp.reduce(
-                  (total, item) => total + Number(item.expenseAmount),
-                  0
-                );
-                return (
-                  <motion.div
-                    key={budget.$id}
-                    layout
-                    layoutId={budget.$id} // Important for smooth transitions
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    whileHover={{
-                      scale: 1.01,
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                    }}
-                    transition={layoutTransition}
-                  >
-                    <Link
+              {filterandcategory.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-lg">
+                    No budgets match your filter criteria.
+                  </p>
+                  <p className="text-sm">
+                    Try adjusting your filters or create a new budget.
+                  </p>
+                </div>
+              ) : (
+                filterandcategory.map((budget) => {
+                  const exp = expenses.filter((e) => budget.$id === e.budgets);
+                  const amount = exp.reduce(
+                    (total, item) => total + Number(item.expenseAmount),
+                    0
+                  );
+
+                  return (
+                    <motion.div
                       key={budget.$id}
-                      href={{
-                        pathname: "/budgetdetail",
-                        query: {
-                          id: budget.$id,
-                          name: budget.CategoryName,
-                          amount: budget.Amount,
-                        },
+                      layout
+                      layoutId={budget.$id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      whileHover={{
+                        scale: 1.01,
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
                       }}
-                      className="block transition-transform duration-200 hover:scale-[1.02]"
+                      transition={layoutTransition}
                     >
-                      <Budgetcards
-                        name={budget.CategoryName}
-                        amount={budget.Amount}
-                        category={budget.BudgetName}
-                        amountexpense={amount}
-                      />
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                      <Link
+                        key={budget.$id}
+                        href={{
+                          pathname: "/budgetdetail",
+                          query: {
+                            id: budget.$id,
+                            name: budget.CategoryName,
+                            amount: budget.Amount,
+                          },
+                        }}
+                        className="block transition-transform duration-200 hover:scale-[1.02]"
+                      >
+                        <Budgetcards
+                          name={budget.CategoryName}
+                          amount={budget.Amount}
+                          category={budget.BudgetName}
+                          amountexpense={amount}
+                        />
+                      </Link>
+                    </motion.div>
+                  );
+                })
+              )}
             </motion.div>
           )}
         </div>

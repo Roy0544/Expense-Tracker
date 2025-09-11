@@ -4,6 +4,7 @@ const initialState = {
   status: false,
   userdata: null,
   theme: false,
+  gender: "",
 };
 
 const authSlice = createSlice({
@@ -28,7 +29,10 @@ const authSlice = createSlice({
     setTheme(state, action) {
       state.theme = action.payload;
     },
+    setgender(state, action) {
+      state.gender = action.payload;
+    },
   },
 });
-export const { login, logout, theme, setTheme } = authSlice.actions;
+export const { login, logout, theme, setTheme, setgender } = authSlice.actions;
 export default authSlice.reducer;

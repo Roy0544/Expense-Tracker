@@ -191,7 +191,7 @@ export default function Dashboard({ budget, expense }) {
                       Spent
                     </p>
                     <p className="text-[17px] font-bold text-gray-800 dark:text-gray-200">
-                      ${item.spent.toLocaleString()}
+                      ₹{item.spent.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
@@ -199,7 +199,7 @@ export default function Dashboard({ budget, expense }) {
                       Budget
                     </p>
                     <p className="text-[17px] font-semibold text-gray-600 dark:text-gray-300">
-                      ${item.budget.toLocaleString()}
+                      ₹{item.budget.toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -233,10 +233,10 @@ export default function Dashboard({ budget, expense }) {
                 >
                   <p className={`text-sm font-medium ${cardStyles.textColor}`}>
                     {isOverBudget
-                      ? `$${(
+                      ? `₹${(
                           item.spent - item.budget
                         ).toLocaleString()} over budget!`
-                      : `$${(
+                      : `₹${(
                           item.budget - item.spent
                         ).toLocaleString()} remaining`}
                   </p>

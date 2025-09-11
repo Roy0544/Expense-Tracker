@@ -7,7 +7,7 @@ import Link from "next/link";
 import authservice from "@/appwrite/auth";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { login } from "@/store/authSlice";
+import { login, setgender } from "@/store/authSlice";
 
 function SignUpPage() {
   const router = useRouter();
@@ -26,6 +26,7 @@ function SignUpPage() {
       console.log("Account Created Successfully", account);
       if (account) {
         dispatch(login(account));
+        dispatch(setgender(data.gender));
       }
       router.push("/dashboard");
     } catch (error) {
