@@ -109,12 +109,12 @@ export default function CategoryAmountPopover({ badd, setbadd, userid }) {
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block cursor-pointer">
       {/* Animated Trigger Button */}
       <motion.button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 md:px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold shadow-lg"
+        className="px-3 md:px-6 py-3 bg-gradient-to-r from-green-500 cursor-pointer to-green-600 text-white rounded-lg font-semibold shadow-lg"
         initial={{ scale: 1 }}
         whileHover={{
           scale: 1.05,

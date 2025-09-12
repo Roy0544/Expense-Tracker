@@ -399,7 +399,7 @@ export default function ExpenseTrackerUserProfile() {
                 Recent Activity
               </motion.h2>
               <motion.button
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-blue-600  cursor-pointer hover:text-blue-700 font-medium"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={morehandler}

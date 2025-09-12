@@ -27,7 +27,7 @@ function Logout() {
         onClick={handlelogout}
         variant={"outline"}
         className={
-          " bg-transparent text-black border-none hover:bg-red-500 hover:text-white font-bold text-[16px] font-sans dark:text-white"
+          " bg-transparent text-black border-none cursor-pointer hover:bg-red-500 hover:text-white font-bold text-[16px] font-sans dark:text-white"
         }
       >
         <svg

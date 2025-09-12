@@ -130,7 +130,7 @@ function page() {
             Please login to access your budget dashboard
           </p>
           <Link href="/login">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">
+            <Button className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-6 py-2">
               Go to Login
             </Button>
           </Link>
@@ -221,17 +221,19 @@ function page() {
               >
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-blue-100 text-sm">Total Categories</p>
-                  <p className="text-2xl font-bold">{budgets.length}</p>
+                  <p className="text-2xl font-bold font-mono">
+                    {budgets.length}
+                  </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-blue-100 text-sm">Total Budget</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold font-mono">
                     ₹{totalBudgetAmount.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-blue-100 text-sm">Avg. per Category</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold font-mono">
                     ₹{Math.round(averageBudget).toLocaleString()}
                   </p>
                 </div>
@@ -262,13 +264,13 @@ function page() {
                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"
                   />
                 </svg>
-                <span className="text-gray-700 dark:text-gray-300 font-medium">
+                <span className="text-gray-700 dark:text-gray-300  font-medium">
                   <Selectbudgets />
                 </span>
               </div>
 
               {/* View Mode Toggle */}
-              <motion.div className=" md:flex hidden bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <motion.div className=" md:flex hidden cursor-pointer bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

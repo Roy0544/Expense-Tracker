@@ -108,16 +108,16 @@ function Navbar() {
           >
             <motion.div
               variants={menuVariants}
-              className="flex gap-4 text-[18px]"
+              className="flex gap-4 text-[18px] cursor-pointer"
             >
-              <AnimatedThemeToggler />
+              <AnimatedThemeToggler className={"cursor-pointer"} />
               {!authstate ? (
                 <>
                   <Link href="/login">
                     <Button
                       variant="outline"
                       className={
-                        "bg-amber-500 text-white font-bold text-[18px] font-sans dark:bg-amber-500"
+                        "bg-amber-500 text-white font-bold cursor-pointer text-[18px] font-sans dark:bg-amber-500"
                       }
                     >
                       Log In
@@ -127,7 +127,7 @@ function Navbar() {
                     <Button
                       variant={"outline"}
                       className={
-                        "bg-blue-400 text-white font-bold text-[16px] font-sans dark:bg-blue-400"
+                        "bg-blue-400 text-white font-bold cursor-pointer text-[16px] font-sans dark:bg-blue-400"
                       }
                     >
                       Sign Up
@@ -139,11 +139,11 @@ function Navbar() {
                   <Link href="/dashboard">
                     <Button
                       variant="ghost"
-                      className={`text-gray-700 dark:text-gray-300 hover:text-blue-600    dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 
+                      className={`text-gray-700 dark:text-gray-300 cursor-pointer hover:text-blue-600    dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 
                   ${
                     pathname === "/dashboard"
                       ? "bg-blue-600 text-white"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                      : "text-gray-700 dark:text-gray-300  hover:bg-blue-50 dark:hover:bg-blue-950/30"
                   }`}
                     >
                       DashBoard
@@ -152,7 +152,7 @@ function Navbar() {
                   <Link href="/budgets">
                     <Button
                       variant="ghost"
-                      className={`text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
+                      className={`text-gray-700 dark:text-gray-300 cursor-pointer hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
                         pathname === "/budgets"
                           ? "bg-green-600 text-white"
                           : "text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-950/30"
@@ -164,7 +164,7 @@ function Navbar() {
                   <Link href="/expense">
                     <Button
                       variant="ghost"
-                      className={`text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
+                      className={`text-gray-700 dark:text-gray-300 cursor-pointer hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
                         pathname === "/expense"
                           ? "bg-red-600 text-white"
                           : "text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-950/30"
@@ -176,7 +176,7 @@ function Navbar() {
                   <Link href="/user">
                     <Button
                       variant="ghost"
-                      className={`text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
+                      className={`text-gray-700 dark:text-gray-300 cursor-pointer hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
                         pathname === "/user"
                           ? "bg-purple-600 text-white"
                           : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/30"

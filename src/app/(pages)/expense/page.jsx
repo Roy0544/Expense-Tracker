@@ -249,17 +249,17 @@ function page() {
               <motion.div className="flex flex-wrap gap-4 mt-6">
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-pink-100 text-sm">Total Expenses</p>
-                  <p className="text-2xl font-bold">{expenseCount}</p>
+                  <p className="text-2xl font-bold font-mono">{expenseCount}</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-pink-100 text-sm">Total Spent</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold font-mono">
                     ₹{totalExpenses.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
                   <p className="text-pink-100 text-sm">Avg. per Expense</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-2xl font-bold font-mono ">
                     ₹{Math.round(averageExpense).toLocaleString()}
                   </p>
                 </div>
@@ -301,7 +301,7 @@ function page() {
               <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode("chart")}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                  className={`px-3 py-1 cursor-pointer rounded-md text-sm font-medium transition-all ${
                     viewMode === "chart"
                       ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
@@ -311,9 +311,9 @@ function page() {
                 </button>
                 <button
                   onClick={() => setViewMode("table")}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                  className={`px-3 py-1 rounded-md cursor-pointer text-sm font-medium transition-all ${
                     viewMode === "table"
-                      ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
+                      ? "bg-white  dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
                   }`}
                 >
@@ -321,7 +321,7 @@ function page() {
                 </button>
                 <button
                   onClick={() => setViewMode("both")}
-                  className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                  className={`px-3 py-1 cursor-pointer rounded-md text-sm font-medium transition-all ${
                     viewMode === "both"
                       ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
@@ -553,21 +553,21 @@ function page() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm">
                 <div className="text-center">
                   <p className="text-gray-500 dark:text-gray-400">Total</p>
-                  <p className="text-lg font-bold text-rose-600 dark:text-rose-400">
-                    ${totalExpenses.toLocaleString()}
+                  <p className="text-lg font-bold text-rose-600 font-mono dark:text-rose-400">
+                    ₹{totalExpenses.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-gray-500 dark:text-gray-400">
                     Avg. Monthly
                   </p>
-                  <p className="text-lg font-bold text-pink-600 dark:text-pink-400">
-                    ${Math.round(totalExpenses / 30).toLocaleString()}
+                  <p className="text-lg font-bold font-mono text-pink-600 dark:text-pink-400">
+                    ₹{Math.round(totalExpenses / 30).toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-gray-500 dark:text-gray-400">Categories</p>
-                  <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                  <p className="text-lg font-bold text-purple-600 font-mono dark:text-purple-400">
                     {new Set(expenses.map((e) => e.budgets)).size}
                   </p>
                 </div>

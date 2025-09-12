@@ -247,7 +247,7 @@ function Addexpense({ Id, seteadd, eadd, userid }) {
               onClick={handleSubmit(onSubmit)}
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-red-500 via-red-700 to-amber-800 hover:from-red-700 hover:via-red-700 hover:to-red-800 text-white font-semibold py-3 transition-all duration-200 shadow-lg disabled:opacity-50"
+              className="w-full bg-gradient-to-r cursor-pointer from-red-500 via-red-700 to-amber-800 hover:from-red-700 hover:via-red-700 hover:to-red-800 text-white font-semibold py-3 transition-all duration-200 shadow-lg disabled:opacity-50"
             >
               <motion.span className="flex items-center justify-center gap-2">
                 {isSubmitting ? (
