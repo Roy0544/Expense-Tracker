@@ -3,11 +3,7 @@ import { BudgetExpenseChart } from "@/components/Chart";
 import { useSelector } from "react-redux";
 
 export default function Dashboard({ budget, expense }) {
-  // Sample data - replace with your actual data from Appwrite
-  console.log("budget data in dashboard is :", budget);
-  console.log("expnese data in dashboard is :", expense);
   const theme = useSelector((state) => state.auth.theme);
-  console.log("theme here is ", theme);
 
   const budgetData = budget.map((bud) => {
     // Find expenses that match this budget category

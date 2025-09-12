@@ -135,14 +135,12 @@ export default function DataTable({ Id, eadd, expense, userid }) {
           userid
         );
         dispatch(expensebyfilter(filteredExp.rows || []));
-        console.log("Filtered expenses:", filteredExp);
+
         setexdata(filteredExp.rows || []);
-        // console.log("Budget ID being used:", Id);
       } else {
         const response = await expneseservice.listexpenses(userid);
         setexdata(response.rows || []);
         dispatch(allexpenses(response.rows));
-        console.log("epxense here is", response);
       }
     };
     getexpenses();
@@ -164,7 +162,6 @@ export default function DataTable({ Id, eadd, expense, userid }) {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
-  console.log(exdata);
 
   // 🔍 Filtering
   const filteredData = useMemo(() => {
@@ -202,7 +199,6 @@ export default function DataTable({ Id, eadd, expense, userid }) {
   };
 
   const handleDelete = async (id) => {
-    console.log(id);
     try {
       setexdata((prev) => prev.filter((item) => item.$id !== id));
       return await expneseservice.deleteExpense(id);

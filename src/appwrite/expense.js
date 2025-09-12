@@ -12,8 +12,6 @@ export class ExpenseService {
   }
   async createExpense({ expenseAmount, expenseName, budgetId, userId }) {
     try {
-      console.log("trying user id eith ", userId);
-
       return await this.tabledb.createRow(
         conf.databaseId,
         conf.expensesTableId,

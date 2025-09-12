@@ -21,8 +21,6 @@ function page() {
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [userid, setuserid] = useState("");
 
-  console.log(expenses);
-
   const getWeekNumber = (date) => {
     const targetDate = new Date(date.getTime());
     targetDate.setHours(0, 0, 0, 0);
@@ -59,7 +57,7 @@ function page() {
     const getexpensedata = async (userId) => {
       try {
         const exp = await expneseservice.listexpenses(userId);
-        // console.log("expens ehere is ", exp);
+
         setexpenses(exp.rows);
       } catch (error) {
         console.log("Failed to Fetch Expense Data", error);
@@ -83,9 +81,6 @@ function page() {
           expenseDate.getFullYear() === yearnumber
         );
       });
-
-      console.log("Filtered expenses for this month:", filterbydate);
-      console.log("Number of expenses this month:", filterbydate.length);
     } else if (dateFilter === "week") {
       const datetoday = new Date();
       const weeknumber = getWeekNumber(datetoday);
@@ -98,9 +93,6 @@ function page() {
           expenseDate.getFullYear() === yearnumber
         );
       });
-
-      console.log("Filtered expenses for this week:", filterbydate);
-      console.log("Number of expenses this week:", filterbydate.length);
     } else if (dateFilter === "today") {
       const datetoday = new Date();
       const today = datetoday.getDate();
@@ -112,8 +104,6 @@ function page() {
           expenseDate.getFullYear() === yearnumber
         );
       });
-      console.log("Filtered expenses for  today:", filterbydate);
-      console.log("Number of expenses for today:", filterbydate.length);
     } else {
       setFilteredExpenses(expenses);
     }

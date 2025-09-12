@@ -34,7 +34,6 @@ export function BudgetExpenseChart({ budgetData, theme }) {
     }
   }, [resolvedTheme]);
   const isDark = resolvedTheme === true;
-  console.log(isDark);
 
   const chartData = {
     labels: budgetData.map((item) => item.category), // ['Food', 'Transport', 'Entertainment', 'Bills']

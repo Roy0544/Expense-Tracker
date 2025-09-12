@@ -77,13 +77,11 @@ function BudgetDetailClient() {
   }, []);
 
   const exp = useSelector((state) => state.expense.filterExpenses);
-  console.log("expense amoount is ", exp);
 
   const amount = exp.reduce(
     (total, item) => total + Number(item.expenseAmount),
     0
   );
-  console.log("total amount is ", amount);
 
   if (isCheckingAuth) {
     return (

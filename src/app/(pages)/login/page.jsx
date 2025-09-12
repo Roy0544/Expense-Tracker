@@ -20,10 +20,9 @@ function LoginPage() {
   } = useForm({ mode: "onBlur", reValidateMode: "onChange" });
 
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       const account = await authservice.login(data);
-      console.log("Account Created Succesfully", account);
+
       if (account) {
         dispatch(login(account));
       }

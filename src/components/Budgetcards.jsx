@@ -146,7 +146,7 @@ export default function Budgetcards({ name, amount, amountexpense, category }) {
                     Amount Spent
                   </span>
                   <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    $<NumberTicker value={amountexpense} />
+                    ₹<NumberTicker value={amountexpense} />
                   </span>
                 </div>
               </div>
@@ -178,7 +178,7 @@ export default function Budgetcards({ name, amount, amountexpense, category }) {
             {isOverBudget ? (
               <div className="text-center p-2 bg-rose-50 dark:bg-rose-900/20 rounded-md">
                 <p className="text-sm font-medium text-rose-700 dark:text-rose-400">
-                  ⚠️ Budget exceeded by ${Math.abs(remaining).toLocaleString()}
+                  ⚠️ Budget exceeded by ₹{Math.abs(remaining).toLocaleString()}
                 </p>
               </div>
             ) : (

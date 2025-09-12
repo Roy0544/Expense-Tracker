@@ -1,21 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { motion, percent } from "framer-motion";
-import {
-  Mail,
-  MapPin,
-  Calendar,
-  Edit3,
-  Settings,
-  Plus,
-  DollarSign,
-  CreditCard,
-  TrendingUp,
-  PieChart,
-  Target,
-  CheckCircle,
-  Clock,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { Mail, Calendar, DollarSign, CreditCard, Target } from "lucide-react";
 import authservice from "@/appwrite/auth";
 import budgetservice from "@/appwrite/budget";
 import expneseservice from "@/appwrite/expense";
@@ -70,7 +56,6 @@ export default function ExpenseTrackerUserProfile() {
   const dispatch = useDispatch();
   const authstate = useSelector((state) => state.auth.status);
   const gender = useSelector((state) => state.auth.gender);
-  console.log("gender is ", gender);
 
   const [user, setuser] = useState({});
   const [budgetdata, setbudgetdata] = useState([]);
@@ -88,17 +73,14 @@ export default function ExpenseTrackerUserProfile() {
 
       await getbudgets(user.$id);
       await getexpenses(user.$id);
-      console.log("user details is ", user);
     };
     const getbudgets = async (userId) => {
       const budget = await budgetservice.listbudgets(userId);
-      console.log(budget.rows);
 
       setbudgetdata(budget.rows);
     };
     const getexpenses = async (userId) => {
       const expense = await expneseservice.listexpenses(userId);
-      console.log(expense.rows);
 
       setexpensedata(expense.rows);
     };
@@ -110,15 +92,7 @@ export default function ExpenseTrackerUserProfile() {
       setexpensedata([]);
     }
   }, [authstate]);
-  // const [user] = useState({
-  //   name: "Alex Johnson",
-  //   email: "alex.johnson@email.com",
-  //   phone: "+1 (555) 123-4567",
-  //   location: "New York, NY",
-  //   joinDate: "March 2023",
-  //   profileImage: "/api/placeholder/150/150",
-  //   membershipTier: "Premium",
-  // });
+
   const totalbudgetamount = budgetdata.reduce(
     (total, item) => total + Number(item.Amount),
     0
@@ -128,7 +102,6 @@ export default function ExpenseTrackerUserProfile() {
     (total, item) => total + Number(item.expenseAmount),
     0
   );
-  // console.log("expense data", totalbudgetamount, totalexpenseamount);
 
   const financialStats = [
     {
@@ -162,7 +135,6 @@ export default function ExpenseTrackerUserProfile() {
   const sortedBudgets = [...activity].sort(
     (a, b) => new Date(b.$createdAt) - new Date(a.$createdAt)
   );
-  // console.log(sortedBudgets);
 
   const recentactivity = sortedBudgets.map((sort) => {
     return {
@@ -175,7 +147,6 @@ export default function ExpenseTrackerUserProfile() {
       date: sort.$createdAt,
     };
   });
-  console.log(recentactivity);
 
   const [recentExpenses] = useState([
     {
@@ -217,7 +188,6 @@ export default function ExpenseTrackerUserProfile() {
   ]);
   const percentage =
     ((totalbudgetamount - totalexpenseamount) / totalbudgetamount) * 100;
-  console.log(percentage);
 
   const [budgetGoals] = useState([
     { category: "Food & Dining", spent: 1200, budget: 1500, percentage: 80 },
@@ -500,12 +470,8 @@ export default function ExpenseTrackerUserProfile() {
               )}
             </motion.div>
           </motion.div>
-
-          {/* Budget Goals & Quick Actions */}
         </div>{" "}
-        {/* closes grid */}
       </div>{" "}
-      {/* closes max-w-7xl wrapper */}
     </motion.div>
   );
 }

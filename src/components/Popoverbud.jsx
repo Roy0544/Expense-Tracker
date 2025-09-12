@@ -56,7 +56,6 @@ export default function CategoryAmountPopover({ badd, setbadd, userid }) {
   const popoverRef = useRef(null);
   const buttonRef = useRef(null);
   const dispatch = useDispatch();
-  console.log("user id at adding time is ", userid);
 
   const {
     register,
@@ -82,9 +81,7 @@ export default function CategoryAmountPopover({ badd, setbadd, userid }) {
   }, []);
 
   const onSubmit = async (data) => {
-    console.log(data);
     const amountnum = Math.trunc(data.amount);
-    console.log(amount);
 
     try {
       const payload = {
@@ -94,7 +91,6 @@ export default function CategoryAmountPopover({ badd, setbadd, userid }) {
         userId: userid,
       };
       const budget = await budgetservice.createBudget(payload);
-      console.log("Budget Created Successfully Please Refresh", budget);
 
       // Show success animation
       setIsSuccess(true);

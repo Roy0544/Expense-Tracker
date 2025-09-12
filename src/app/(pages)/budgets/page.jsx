@@ -49,7 +49,6 @@ function page() {
     const getcategories = async (userId) => {
       const categories = await budgetservice.listbudgets(userId);
       setbudgets(categories.rows);
-      console.log(categories);
 
       if (categories) {
         dispatch(allbudgets(categories));
@@ -61,24 +60,6 @@ function page() {
     };
     Checkstattus();
   }, [badd]);
-
-  // useEffect(() => {
-  //   const getcategories = async () => {
-  //     const categories = await budgetservice.listbudgets();
-  //     setbudgets(categories.rows);
-  //     console.log(categories);
-
-  //     if (categories) {
-  //       dispatch(allbudgets(categories));
-  //     }
-  //   };
-  //   const getexpenses = async () => {
-  //     const expense = await expneseservice.listexpenses();
-  //     setexpenses(expense.rows);
-  //   };
-  //   getcategories();
-  //   getexpenses();
-  // }, [badd]);
 
   useEffect(() => {
     if (authstate === false) {
@@ -169,7 +150,6 @@ function page() {
     if (!filter || filter === "") return true; // Show all if no category filter
     return f.BudgetName.toLowerCase() === filter.toLowerCase();
   });
-  console.log("filter is", filterandcategory);
 
   const amount = exp.reduce(
     (total, item) => total + Number(item.expenseAmount),

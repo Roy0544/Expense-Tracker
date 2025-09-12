@@ -40,14 +40,10 @@ function page() {
     const getallbudgets = async (userId) => {
       const bud = await budgetservice.listbudgets(userId);
       setbudgetdata(bud.rows);
-      // dispatch(allbudgets(bud.rows))
-      console.log(bud.rows);
     };
     const getallexpense = async (userId) => {
       const exp = await expneseservice.listexpenses(userId);
       setexpensedata(exp.rows);
-      // dispatch(allexpenses(exp.rows))
-      console.log(exp);
     };
 
     getcurrentuser();
@@ -121,7 +117,6 @@ function page() {
       </motion.div>
     );
   }
-  console.log(budgetdata);
 
   return (
     <div>
@@ -274,7 +269,7 @@ function page() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             id="chart"
-            className=" w-full  lg:w-[60%]  h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-xl shadow-2xl "
+            className=" w-full  lg:w-[60%]  h-auto bg-white   dark:bg-gray-800 border-l-4 border-blue-500 rounded-lg shadow-2xl "
           >
             <Dashboard budget={budgetdata} expense={expensedata} />
           </motion.div>

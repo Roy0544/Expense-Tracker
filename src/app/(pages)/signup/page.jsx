@@ -20,10 +20,9 @@ function SignUpPage() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data); // Now includes gender field
     try {
       const account = await authservice.createAccount(data);
-      console.log("Account Created Successfully", account);
+
       if (account) {
         dispatch(login(account));
         dispatch(setgender(data.gender));

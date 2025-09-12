@@ -70,7 +70,6 @@ const buttonVariants = {
 function Addexpense({ Id, seteadd, eadd, userid }) {
   const dispatch = useDispatch();
   const [isSuccess, setIsSuccess] = useState(false); // ✅ Success message state
-  console.log("userid in add expens eis ", userid);
 
   const {
     register,
@@ -80,7 +79,6 @@ function Addexpense({ Id, seteadd, eadd, userid }) {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       const expenese = {
         expenseName: data.name,
@@ -89,7 +87,7 @@ function Addexpense({ Id, seteadd, eadd, userid }) {
         userId: userid,
       };
       const expense = await expneseservice.createExpense(expenese);
-      console.log("Expense Created Successfully", expense);
+
       dispatch(addExpense(expense));
 
       // ✅ Show success message and clear form
